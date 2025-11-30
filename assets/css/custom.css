@@ -1,0 +1,261 @@
+/*
+:root variables for the default Light Theme
+*/
+:root {
+    --primary-color: #8B4513; /* SaddleBrown */
+    --secondary-color: #D2B48C; /* Tan */
+    --accent-color: #C0A080;
+    --background-color: #FDFBF7;
+    --surface-color: #FFFFFF; /* For cards, headers, etc. */
+    --text-color: #4A4A4A;
+    --heading-color: #2F2F2F;
+    --border-color: #EAEAEA;
+    --footer-bg: #2C2C2C;
+    --white-color: #FFFFFF;
+
+    --font-family-sans-serif: 'Montserrat', sans-serif;
+    --body-font: 'Montserrat', sans-serif;
+}
+
+/*
+Variables for the Dark Theme
+We will apply these by adding a class="dark" to the <html> tag
+*/
+html.dark {
+    --primary-color: #C0A080; /* Lighter tan for accents in dark mode */
+    --secondary-color: #8B4513; /* Darker brown */
+    --accent-color: #D2B48C;
+    --background-color: #1A1A1A; /* Very dark grey, almost black */
+    --surface-color: #2C2C2C; /* Dark grey for cards and surfaces */
+    --text-color: #D5D5D5; /* Light grey for body text */
+    --heading-color: #FFFFFF; /* White for headings */
+    --border-color: #444444; /* Grey for borders */
+    --footer-bg: #111111; /* Even darker for footer */
+}
+
+
+body {
+    font-family: var(--body-font);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.7;
+    font-weight: 400;
+    overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    color: var(--heading-color);
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+/* --- Buttons --- */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--background-color); /* To have contrast in both themes */
+    padding: 12px 30px;
+    font-weight: 600;
+    border-radius: 50px;
+    transition: all 0.3s ease-in-out;
+}
+html.dark .btn-primary {
+    color: var(--heading-color);
+}
+
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.btn-outline-primary {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    padding: 12px 30px;
+    font-weight: 600;
+    border-radius: 50px;
+}
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    color: var(--white-color);
+}
+
+/* --- Header --- */
+.site-header {
+    background-color: var(--surface-color);
+    box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.3s ease;
+}
+
+html.dark .site-header {
+     box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+}
+
+.site-header .nav-link,
+.site-header a {
+    color: var(--text-color) !important;
+    font-weight: 500;
+    font-size: 16px;
+    padding: 8px 12px;
+    position: relative;
+}
+
+.site-header a.active,
+.site-header a:hover {
+    color: var(--primary-color) !important;
+}
+
+.site-header .badge {
+    background-color: var(--primary-color) !important;
+    color: var(--background-color) !important;
+}
+
+html.dark .site-header .badge {
+    color: var(--heading-color) !important;
+}
+
+
+/* --- Footer --- */
+.site-footer {
+    background-color: var(--footer-bg);
+    color: #AFAFAF;
+}
+.site-footer h5 {
+    color: var(--heading-color);
+}
+.site-footer a {
+    color: #AFAFAF !important;
+}
+.site-footer a:hover {
+    color: var(--white-color) !important;
+}
+.site-footer .border-top {
+    border-color: var(--border-color) !important;
+}
+
+/* --- Product Card --- */
+.product-card {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.04);
+}
+
+html.dark .product-card {
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+}
+
+html.dark .product-card:hover {
+    box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+}
+
+
+.product-card .product-image img {
+    transition: transform 0.5s ease;
+}
+
+.product-card:hover .product-image img {
+    transform: scale(1.05);
+}
+
+.product-card .product-info {
+    padding: 20px;
+}
+
+.product-card .product-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--heading-color);
+}
+
+.product-card .product-price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* --- Product Page Color Swatches --- */
+.color-swatches .btn-check + .btn {
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    padding: 0;
+    font-size: 0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.color-swatches .btn-check:checked + .btn {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 3px var(--surface-color), 0 0 0 5px var(--primary-color);
+}
+
+/* Handle specific colors that need border in light mode */
+.color-swatches [style*="#FFFFFF"] + label,
+.color-swatches [style*="#ffffff"] + label {
+    border-color: #dedede;
+}
+
+html.dark .color-swatches [style*="#000000"] + label {
+     border-color: #555;
+}
+
+/* --- Admin panel dark theme overrides --- */
+.bg-dark {
+    background-color: var(--background-color) !important;
+}
+.text-white {
+    color: var(--text-color) !important;
+}
+.bg-dark-2 {
+    background-color: var(--surface-color) !important;
+}
+.form-control.bg-dark {
+    background-color: var(--background-color) !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color);
+}
+.form-control.bg-dark:focus {
+    background-color: var(--background-color) !important;
+    color: var(--text-color) !important;
+    border-color: var(--primary-color);
+    box-shadow: none;
+}
+
+/* --- Product Image Aspect Ratio --- */
+.product-image {
+    overflow: hidden;
+    position: relative;
+    background-color: var(--border-color); /* Placeholder bg */
+    aspect-ratio: 3 / 4; /* Enforce 3:4 aspect ratio */
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* This will crop the image to fit */
+}

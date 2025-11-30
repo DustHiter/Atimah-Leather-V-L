@@ -1,150 +1,88 @@
-<?php
-declare(strict_types=1);
-@ini_set('display_errors', '1');
-@error_reporting(E_ALL);
-@date_default_timezone_set('UTC');
+<?php 
+$page_title = 'صفحه اصلی';
+include 'includes/header.php'; 
+?>
 
-$phpVersion = PHP_VERSION;
-$now = date('Y-m-d H:i:s');
-?>
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>New Style</title>
-<?php
-// Read project preview data from environment
-$projectDescription = $_SERVER['PROJECT_DESCRIPTION'] ?? '';
-$projectImageUrl = $_SERVER['PROJECT_IMAGE_URL'] ?? '';
-?>
-<?php if ($projectDescription): ?>
-  <!-- Meta description -->
-  <meta name="description" content='<?= htmlspecialchars($projectDescription) ?>' />
-  <!-- Open Graph meta tags -->
-  <meta property="og:description" content="<?= htmlspecialchars($projectDescription) ?>" />
-  <!-- Twitter meta tags -->
-  <meta property="twitter:description" content="<?= htmlspecialchars($projectDescription) ?>" />
-<?php endif; ?>
-<?php if ($projectImageUrl): ?>
-  <!-- Open Graph image -->
-  <meta property="og:image" content="<?= htmlspecialchars($projectImageUrl) ?>" />
-  <!-- Twitter image -->
-  <meta property="twitter:image" content="<?= htmlspecialchars($projectImageUrl) ?>" />
-<?php endif; ?>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg-color-start: #6a11cb;
-      --bg-color-end: #2575fc;
-      --text-color: #ffffff;
-      --card-bg-color: rgba(255, 255, 255, 0.01);
-      --card-border-color: rgba(255, 255, 255, 0.1);
-    }
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(45deg, var(--bg-color-start), var(--bg-color-end));
-      color: var(--text-color);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      text-align: center;
-      overflow: hidden;
-      position: relative;
-    }
-    body::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M-10 10L110 10M10 -10L10 110" stroke-width="1" stroke="rgba(255,255,255,0.05)"/></svg>');
-      animation: bg-pan 20s linear infinite;
-      z-index: -1;
-    }
-    @keyframes bg-pan {
-      0% { background-position: 0% 0%; }
-      100% { background-position: 100% 100%; }
-    }
-    main {
-      padding: 2rem;
-    }
-    .card {
-      background: var(--card-bg-color);
-      border: 1px solid var(--card-border-color);
-      border-radius: 16px;
-      padding: 2rem;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-    }
-    .loader {
-      margin: 1.25rem auto 1.25rem;
-      width: 48px;
-      height: 48px;
-      border: 3px solid rgba(255, 255, 255, 0.25);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-    }
-    .hint {
-      opacity: 0.9;
-    }
-    .sr-only {
-      position: absolute;
-      width: 1px; height: 1px;
-      padding: 0; margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap; border: 0;
-    }
-    h1 {
-      font-size: 3rem;
-      font-weight: 700;
-      margin: 0 0 1rem;
-      letter-spacing: -1px;
-    }
-    p {
-      margin: 0.5rem 0;
-      font-size: 1.1rem;
-    }
-    code {
-      background: rgba(0,0,0,0.2);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    }
-    footer {
-      position: absolute;
-      bottom: 1rem;
-      font-size: 0.8rem;
-      opacity: 0.7;
-    }
-  </style>
-</head>
-<body>
-  <main>
-    <div class="card">
-      <h1>Analyzing your requirements and generating your website…</h1>
-      <div class="loader" role="status" aria-live="polite" aria-label="Applying initial changes">
-        <span class="sr-only">Loading…</span>
-      </div>
-      <p class="hint"><?= ($_SERVER['HTTP_HOST'] ?? '') === 'appwizzy.com' ? 'AppWizzy' : 'Flatlogic' ?> AI is collecting your requirements and applying the first changes.</p>
-      <p class="hint">This page will update automatically as the plan is implemented.</p>
-      <p>Runtime: PHP <code><?= htmlspecialchars($phpVersion) ?></code> — UTC <code><?= htmlspecialchars($now) ?></code></p>
-    </div>
-  </main>
-  <footer>
-    Page updated: <?= htmlspecialchars($now) ?> (UTC)
-  </footer>
-</body>
-</html>
+        <!-- Hero Section -->
+        <section class="hero-section vh-100 d-flex align-items-center text-white text-center">
+            <div class="video-background-wrapper">
+                 <div class="video-overlay"></div>
+                 <video playsinline="playsinline" autoplay="autoplay" muted="muted" loop="loop">
+                    <source src="https://storage.googleapis.com/gemini-agent-mediabucket-prod/v-001/video_bg.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="container position-relative">
+                <h1 class="display-3 fw-bold mb-3 hero-title" data-aos="fade-up">اصالت در هر نگاه</h1>
+                <p class="lead fs-4 mb-4 hero-subtitle" data-aos="fade-up" data-aos-delay="200">محصولات چرمی دست‌دوز، آفریده برای ماندگاری.</p>
+                <a href="shop.php" class="btn btn-primary btn-lg" data-aos="fade-up" data-aos-delay="400">کاوش در مجموعه</a>
+            </div>
+        </section>
+
+
+        <!-- Featured Products Section -->
+        <section id="featured-products" class="py-5">
+            <div class="container">
+                <div class="text-center mb-5" data-aos="fade-up">
+                    <h2 class="display-5 fw-bold">مجموعه برگزیده ما</h2>
+                    <p class="text-white-50 fs-5">دست‌چین شده برای سلیقه‌های خاص.</p>
+                </div>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 g-lg-5">
+                    <?php
+                    require_once 'db/config.php';
+                    try {
+                        $pdo = db();
+                        $stmt = $pdo->query("SELECT * FROM products WHERE is_featured = 1 ORDER BY created_at DESC LIMIT 3");
+                        $featured_products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                        $animations = ['fade-up', 'zoom-in-up', 'fade-left'];
+                        if (empty($featured_products)) {
+                            echo '<div class="col-12"><p class="text-center text-white-50">هیچ محصولی برای نمایش وجود ندارد.</p></div>';
+                        } else {
+                            $delay = 0;
+                            foreach ($featured_products as $key => $product) {
+                                $animation = $animations[$key % count($animations)]; // Cycle through animations
+                                echo '<div class="col" data-aos="' . $animation . '" data-aos-delay="' . $delay . '">';
+                                echo '    <div class="product-card h-100">';
+                                echo '        <div class="product-image">';
+                                echo '            <a href="product.php?id=' . $product['id'] . '">';
+                                echo '                <img src="' . htmlspecialchars($product['image_url']) . '" class="img-fluid" alt="' . htmlspecialchars($product['name']) . '">';
+                                echo '            </a>';
+                                echo '        </div>';
+                                echo '        <div class="product-info text-center">';
+                                echo '            <h3 class="product-title"><a href="product.php?id=' . $product['id'] . '" class="text-decoration-none">' . htmlspecialchars($product['name']) . '</a></h3>';
+                                echo '            <p class="product-price">' . number_format($product['price']) . ' تومان</p>';
+                                echo '        </div>';
+                                echo '    </div>';
+                                echo '</div>';
+                                $delay += 150;
+                            }
+                        }
+                    } catch (PDOException $e) {
+                        error_log("Database error: " . $e->getMessage());
+                        echo '<div class="col-12"><p class="text-center text-danger">خطا در بارگذاری محصولات.</p></div>';
+                    }
+                    ?>
+                </div>
+                 <div class="text-center mt-5" data-aos="fade-up">
+                    <a href="shop.php" class="btn btn-outline-gold btn-lg">مشاهده تمام محصولات</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Us Section -->
+        <section id="about-us" class="py-5 my-5">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6" data-aos="fade-right">
+                        <img src="https://storage.googleapis.com/gemini-agent-mediabucket-prod/v-001/about-us.jpg" alt="درباره ما" class="img-fluid rounded-4 shadow-lg">
+                    </div>
+                    <div class="col-md-6 mt-4 mt-md-0 ps-md-5" data-aos="fade-left">
+                        <h2 class="display-5 fw-bold">داستان آتیمه</h2>
+                        <p class="text-white-50 fs-5 mt-3">ما در آتیمه، به تلفیق هنر سنتی و طراحی مدرن باور داریم. هر محصول، حاصل ساعت‌ها کار دست هنرمندان ماهر و استفاده از بهترین چرم‌های طبیعی است. هدف ما خلق آثاری است که نه تنها یک وسیله، بلکه بخشی از داستان و استایل شما باشند.</p>
+                        <a href="#" class="btn btn-primary mt-3">بیشتر بدانید</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+<?php include 'includes/footer.php'; ?>

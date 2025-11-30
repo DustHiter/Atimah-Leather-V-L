@@ -1,0 +1,1 @@
+ALTER TABLE products ADD COLUMN colors VARCHAR(255) DEFAULT NULL COMMENT 'Comma-separated list of available colors';
