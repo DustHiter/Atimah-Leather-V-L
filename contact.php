@@ -29,7 +29,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 include 'includes/header.php';
 ?>
 
-<main class="container my-5 py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8 text-center" data-aos="fade-up">
             <h1 class="display-4 fw-bold"><?php echo $page_title; ?></h1>
@@ -79,9 +78,5 @@ include 'includes/header.php';
              <div class="alert alert-info mt-4"><b>توجه:</b> این فرم برای اهداف آزمایشی است. برای دریافت واقعی ایمیل‌ها، باید اطلاعات سرور ایمیل (SMTP) خود را در فایل <code>.env</code> وارد کنید.</div>
         </div>
     </div>
-</main>
 
 <?php include 'includes/footer.php'; ?>
-
-</body>
-</html>

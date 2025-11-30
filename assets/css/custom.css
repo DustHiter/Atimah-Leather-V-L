@@ -259,3 +259,33 @@ html.dark .color-swatches [style*="#000000"] + label {
     height: 100%;
     object-fit: cover; /* This will crop the image to fit */
 }
+
+/* --- Responsive Design --- */
+@media (max-width: 768px) {
+    .display-3 {
+        font-size: 2.5rem;
+    }
+    .display-4 {
+        font-size: 2rem;
+    }
+    .display-5 {
+        font-size: 1.75rem;
+    }
+
+    .hero-section {
+        height: auto; /* Adjust height for mobile */
+        padding: 100px 0;
+    }
+
+    .product-card .product-info {
+        padding: 15px;
+    }
+
+    .site-footer {
+        text-align: center;
+    }
+
+    .site-footer .col-lg-2, .site-footer .col-lg-3, .site-footer .col-lg-4 {
+        margin-bottom: 30px;
+    }
+}
