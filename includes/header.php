@@ -6,7 +6,7 @@ $cart_item_count = isset($_SESSION['cart']) ? array_sum(array_column($_SESSION['
 $page_title = $page_title ?? 'فروشگاه آتیمه'; // Default title
 ?>
 <!DOCTYPE html>
-<html lang="fa" dir="rtl" class="dark">
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,12 +29,29 @@ $page_title = $page_title ?? 'فروشگاه آتیمه'; // Default title
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/assets/css/custom.css?v=<?php echo time(); ?>">
 
+    <script>
+        // Apply theme from local storage before page load to prevent flashing
+        (function() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
+
 </head>
 <body>
+    <div class="overflow-hidden">
+    <?php
+    $current_page = basename($_SERVER['PHP_SELF']);
+    $is_admin_page = strpos($_SERVER['REQUEST_URI'], '/admin/') !== false;
+    ?>
 
 <header class="site-header sticky-top py-3">
     <nav class="navbar navbar-expand-lg container">
-        <div class="container-fluid">
+        <div class="container">
             <a class="navbar-brand fw-bold fs-4" href="index.php">آتیمه</a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,6 +75,9 @@ $page_title = $page_title ?? 'فروشگاه آتیمه'; // Default title
                 </ul>
 
                 <div class="d-flex align-items-center">
+                    <button id="theme-toggle" class="btn me-3">
+                        <i class="bi bi-moon-stars-fill"></i>
+                    </button>
                     <a href="cart.php" class="ms-4 position-relative">
                         <i class="bi bi-bag fs-5"></i>
                         <?php if ($cart_item_count > 0): ?>

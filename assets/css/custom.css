@@ -100,6 +100,9 @@ html.dark .btn-primary {
     box-shadow: 0 2px 15px rgba(0,0,0,0.05);
     border-bottom: 1px solid var(--border-color);
     transition: background-color 0.3s ease;
+    position: sticky;
+    top: 0;
+    z-index: 1020;
 }
 
 html.dark .site-header {
@@ -228,9 +231,7 @@ html.dark .color-swatches [style*="#000000"] + label {
 .bg-dark {
     background-color: var(--background-color) !important;
 }
-.text-white {
-    color: var(--text-color) !important;
-}
+
 .bg-dark-2 {
     background-color: var(--surface-color) !important;
 }
@@ -262,19 +263,21 @@ html.dark .color-swatches [style*="#000000"] + label {
 
 /* --- Responsive Design --- */
 @media (max-width: 768px) {
+
+
+    /* About Us Mobile */
+    #about-us .display-5 {
+        font-size: 2rem;
+    }
+    #about-us .fs-5 {
+        font-size: 1.1rem;
+    }
+
     .display-3 {
         font-size: 2.5rem;
     }
     .display-4 {
         font-size: 2rem;
-    }
-    .display-5 {
-        font-size: 1.75rem;
-    }
-
-    .hero-section {
-        height: auto; /* Adjust height for mobile */
-        padding: 100px 0;
     }
 
     .product-card .product-info {
@@ -289,3 +292,86 @@ html.dark .color-swatches [style*="#000000"] + label {
         margin-bottom: 30px;
     }
 }
+
+/* --- Header Icon Fixes for Dark Mode --- */
+
+/* Ensure theme toggle and other header buttons are visible in dark mode */
+html.dark .site-header .btn {
+    color: var(--text-color); /* Use the light text color from dark theme variables */
+}
+
+html.dark .site-header .btn:hover {
+    color: var(--primary-color); /* Use a hover color */
+}
+
+/* Fix for bootstrap's default hamburger icon in dark mode */
+html.dark .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* Fix for the border color of the toggler button itself */
+html.dark .navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+@media (max-width: 767.98px) {
+    .social-icons {
+        justify-content: center;
+    }
+}
+
+/* --- Custom Gold Button --- */
+.btn-outline-gold {
+    border-color: #D4AF37; /* Gold */
+    color: #D4AF37;
+    padding: 12px 30px;
+    font-weight: 600;
+    border-radius: 50px;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-outline-gold:hover {
+    background-color: #D4AF37;
+    color: var(--white-color);
+}
+
+html.dark .btn-outline-gold {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+html.dark .btn-outline-gold:hover {
+    background-color: var(--accent-color);
+    color: var(--heading-color);
+}
+
+/* --- Hero Section Text --- */
+.hero-section {
+    position: relative;
+    height: 70vh;
+    display: flex;
+    align-items: center;
+    background: url('../assets/pasted-20251201-135328-2aedc448.jpg') no-repeat center center/cover;
+}
+
+.hero-section .container {
+    width: 100%;
+    text-align: center;
+}
+
+.hero-section .row {
+    justify-content: flex-end;
+}
+.hero-section h1,
+.hero-section p {
+    color: #FFFFFF;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+/* --- About Us Section Text Color Fix for Dark Mode --- */
+html.dark #about-us h2,
+html.dark #about-us p {
+    color: var(--heading-color) !important; /* Use a light, readable color */
+}
+
+

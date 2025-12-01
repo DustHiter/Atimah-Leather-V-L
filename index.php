@@ -4,17 +4,17 @@ include 'includes/header.php';
 ?>
 
         <!-- Hero Section -->
-        <section class="hero-section vh-100 d-flex align-items-center text-white text-center">
+        <section class="hero-section vh-100 d-flex align-items-center" style="background: #111;"> 
             <div class="video-background-wrapper">
                  <div class="video-overlay"></div>
-                 <video playsinline="playsinline" autoplay="autoplay" muted="muted" loop="loop">
-                    <source src="https://storage.googleapis.com/gemini-agent-mediabucket-prod/v-001/video_bg.mp4" type="video/mp4">
+                 <video playsinline="playsinline" autoplay="autoplay" muted="muted" loop="loop" style="opacity: 0.5;">
+                    <source src="https://static.pexels.com/lib/videos/free-videos.mp4" type="video/mp4">
                 </video>
             </div>
             <div class="container position-relative">
-                <h1 class="display-3 fw-bold mb-3 hero-title" data-aos="fade-up">اصالت در هر نگاه</h1>
-                <p class="lead fs-4 mb-4 hero-subtitle" data-aos="fade-up" data-aos-delay="200">محصولات چرمی دست‌دوز، آفریده برای ماندگاری.</p>
-                <a href="shop.php" class="btn btn-primary btn-lg" data-aos="fade-up" data-aos-delay="400">کاوش در مجموعه</a>
+                <h1 class="display-3 fw-bold mb-3 hero-title" data-aos="zoom-in-out" data-aos-delay="100">اصالت در هر نگاه</h1>
+                <p class="lead fs-4 mb-4 hero-subtitle" data-aos="fade-left" data-aos-delay="300">محصولات چرمی دست‌دوز، آفریده برای ماندگاری.</p>
+                <a href="shop.php" class="btn btn-primary btn-lg" data-aos="fade-up" data-aos-delay="500">کاوش در مجموعه</a>
             </div>
         </section>
 
@@ -24,7 +24,7 @@ include 'includes/header.php';
             <div class="container">
                 <div class="text-center mb-5" data-aos="fade-up">
                     <h2 class="display-5 fw-bold">مجموعه برگزیده ما</h2>
-                    <p class="text-white-50 fs-5">دست‌چین شده برای سلیقه‌های خاص.</p>
+                    <p class="text-muted fs-5">دست‌چین شده برای سلیقه‌های خاص.</p>
                 </div>
                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 g-lg-5">
                     <?php
@@ -40,8 +40,7 @@ include 'includes/header.php';
                         } else {
                             $delay = 0;
                             foreach ($featured_products as $key => $product) {
-                                $animation = $animations[$key % count($animations)]; // Cycle through animations
-                                echo '<div class="col" data-aos="' . $animation . '" data-aos-delay="' . $delay . '">';
+                                echo '<div class="col" data-aos="fade-up" data-aos-delay="' . $delay . '">';
                                 echo '    <div class="product-card h-100">';
                                 echo '        <div class="product-image">';
                                 echo '            <a href="product.php?id=' . $product['id'] . '">';
@@ -70,16 +69,16 @@ include 'includes/header.php';
         </section>
 
         <!-- About Us Section -->
-        <section id="about-us" class="py-5 my-5">
+        <section id="about-us" class="py-5">
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-md-6" data-aos="fade-right">
-                        <img src="https://storage.googleapis.com/gemini-agent-mediabucket-prod/v-001/about-us.jpg" alt="درباره ما" class="img-fluid rounded-4 shadow-lg">
+                        <img src="assets/images/pexels/about-us-34942790.jpg" alt="درباره ما" class="img-fluid rounded-4 shadow-lg">
                     </div>
                     <div class="col-md-6 mt-4 mt-md-0 ps-md-5" data-aos="fade-left">
                         <h2 class="display-5 fw-bold">داستان آتیمه</h2>
-                        <p class="text-white-50 fs-5 mt-3">ما در آتیمه، به تلفیق هنر سنتی و طراحی مدرن باور داریم. هر محصول، حاصل ساعت‌ها کار دست هنرمندان ماهر و استفاده از بهترین چرم‌های طبیعی است. هدف ما خلق آثاری است که نه تنها یک وسیله، بلکه بخشی از داستان و استایل شما باشند.</p>
-                        <a href="#" class="btn btn-primary mt-3">بیشتر بدانید</a>
+                        <p class="text-muted fs-5 mt-3">ما در آتیمه، به تلفیق هنر سنتی و طراحی مدرن باور داریم. هر محصول، حاصل ساعت‌ها کار دست هنرمندان ماهر و استفاده از بهترین چرم‌های طبیعی است. هدف ما خلق آثاری است که نه تنها یک وسیله، بلکه بخشی از داستان و استایل شما باشند.</p>
+                        <a href="#" class="btn btn-primary mt-3" data-aos="fade-up" data-aos-delay="200">بیشتر بدانید</a>
                     </div>
                 </div>
             </div>

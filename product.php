@@ -31,16 +31,20 @@ include 'includes/header.php';
 ?>
 
         <div class="row g-5">
-            <div class="col-lg-6">
+            <div class="col-lg-6" data-aos="zoom-in">
                 <img src="<?php echo htmlspecialchars($product['image_url']); ?>" class="img-fluid rounded-4 shadow-lg w-100" alt="<?php echo htmlspecialchars($product['name']); ?>" style="aspect-ratio: 1/1; object-fit: cover;">
             </div>
             <div class="col-lg-6 d-flex flex-column justify-content-center">
-                <h1 class="display-4 fw-bold"><?php echo htmlspecialchars($product['name']); ?></h1>
-                <p class="lead text-white-50 my-3"><?php echo htmlspecialchars($product['description']); ?></p>
+                <div data-aos="fade-right" data-aos-delay="100">
+                    <h1 class="display-4 fw-bold"><?php echo htmlspecialchars($product['name']); ?></h1>
+                    <p class="lead text-white-50 my-3"><?php echo htmlspecialchars($product['description']); ?></p>
+                </div>
                 
-                <div class="display-5 fw-bold my-4 text-gold"><?php echo number_format($product['price']); ?> <span class="fs-5 text-white-50">تومان</span></div>
+                <div data-aos="fade-up" data-aos-delay="200">
+                    <div class="display-5 fw-bold my-4 text-gold"><?php echo number_format($product['price']); ?> <span class="fs-5 text-white-50">تومان</span></div>
+                </div>
                 
-                <form action="cart_handler.php" method="POST">
+                <form action="cart_handler.php" method="POST" data-aos="fade-up" data-aos-delay="300">
                     <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
 
                     <?php if (!empty($available_colors)): ?>
