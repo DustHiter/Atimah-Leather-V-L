@@ -11,9 +11,10 @@
                 <h5 class="fw-bold mb-3">دسترسی سریع</h5>
                 <ul class="list-unstyled">
                     <li><a href="shop.php" class="text-white-50">فروشگاه</a></li>
-                    <li><a href="#" class="text-white-50">درباره ما</a></li>
-                    <li><a href="#" class="text-white-50">قوانین و مقررات</a></li>
-                    <li><a href="#" class="text-white-50">سوالات متداول</a></li>
+                    <li><a href="track_order.php" class="text-white-50">پیگیری سفارش</a></li>
+                    <li><a href="about.php" class="text-white-50">درباره ما</a></li>
+                    <li><a href="terms.php" class="text-white-50">قوانین و مقررات</a></li>
+                    <li><a href="faq.php" class="text-white-50">سوالات متداول</a></li>
                 </ul>
             </div>
             <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">

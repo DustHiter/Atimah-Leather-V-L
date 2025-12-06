@@ -1,109 +1,158 @@
 <?php
 session_start();
+
+
 require_once 'db/config.php';
 
-// 1. Basic Security: Only allow POST requests and check for cart
+// 1. Ensure it's a POST request
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: index.php');
-    exit;
-}
-
-if (empty($_SESSION['cart'])) {
-    header('Location: shop.php');
-    exit;
-}
-
-// 2. Retrieve and sanitize form data
-$first_name = filter_input(INPUT_POST, 'first_name', FILTER_SANITIZE_STRING);
-$last_name = filter_input(INPUT_POST, 'last_name', FILTER_SANITIZE_STRING);
-$phone_number = filter_input(INPUT_POST, 'phone_number', FILTER_SANITIZE_STRING);
-$email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
-$province = filter_input(INPUT_POST, 'province', FILTER_SANITIZE_STRING);
-$city = filter_input(INPUT_POST, 'city', FILTER_SANITIZE_STRING);
-$address_line = filter_input(INPUT_POST, 'address_line', FILTER_SANITIZE_STRING);
-$postal_code = filter_input(INPUT_POST, 'postal_code', FILTER_SANITIZE_STRING);
-
-// 3. Server-side validation (Email is now optional)
-if (!$first_name || !$last_name || !$phone_number || !$province || !$city || !$address_line || !$postal_code) {
-    $_SESSION['error_message'] = 'لطفاً تمام فیلدهای آدرس به جز ایمیل را تکمیل کنید.';
     header('Location: checkout.php');
-    exit;
+    exit();
 }
 
+// 2. Check if cart is empty
+if (empty($_SESSION['cart'])) {
+    $_SESSION['error_message'] = 'سبد خرید شما خالی است.';
+    header('Location: cart.php');
+    exit();
+}
+
+// 3. Collect and trim form data
+$first_name = trim($_POST['first_name'] ?? '');
+$last_name = trim($_POST['last_name'] ?? '');
+$email = trim($_POST['email'] ?? '');
+$phone_number = trim($_POST['phone_number'] ?? '');
+$address_line = trim($_POST['address_line'] ?? '');
+$city = trim($_POST['city'] ?? '');
+$province = trim($_POST['province'] ?? '');
+$postal_code = trim($_POST['postal_code'] ?? '');
+
+// 4. Basic Validation
+$errors = [];
+if (empty($first_name)) $errors[] = 'فیلد نام الزامی است.';
+if (empty($last_name)) $errors[] = 'فیلد نام خانوادگی الزامی است.';
+if (empty($phone_number)) $errors[] = 'فیلد تلفن همراه الزامی است.';
+if (empty($address_line)) $errors[] = 'فیلد آدرس الزامی است.';
+if (empty($city)) $errors[] = 'فیلد شهر الزامی است.';
+if (empty($province)) $errors[] = 'فیلد استان الزامی است.';
+if (empty($postal_code)) $errors[] = 'فیلد کد پستی الزامی است.';
+
+if (!empty($errors)) {
+    $_SESSION['checkout_errors'] = $errors;
+    // Store submitted data to re-populate the form
+    $_SESSION['form_data'] = $_POST;
+    header('Location: checkout.php');
+    exit();
+}
+
+// == Server-Side Calculation ==
+$cart = $_SESSION['cart'];
+$product_ids = array_keys($cart);
+
+$items_for_json = [];
+$total_price = 0;
+
+if (!empty($product_ids)) {
+    $placeholders = implode(',', array_fill(0, count($product_ids), '?'));
+    $stmt = db()->prepare("SELECT id, name, price FROM products WHERE id IN ($placeholders)");
+    $stmt->execute($product_ids);
+    $products_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Create a map for quick lookup
+    $products_by_id = [];
+    foreach($products_data as $product) {
+        $products_by_id[$product['id']] = $product;
+    }
+
+    foreach ($cart as $product_id => $details) {
+        if (isset($products_by_id[$product_id])) {
+            $product = $products_by_id[$product_id];
+            $price = $product['price'];
+            $quantity = $details['quantity'];
+            $total_price += $price * $quantity;
+
+            $items_for_json[] = [
+                'id' => $product_id,
+                'name' => $product['name'],
+                'price' => $price,
+                'quantity' => $quantity,
+                'color' => $details['color']
+            ];
+        }
+    }
+}
+
+$shipping_cost = 50000;
+$grand_total = $total_price + $shipping_cost;
+
+// == Database Operations ==
 $pdo = db();
-$pdo->beginTransaction();
-
 try {
-    // 4. Prepare order data
-    $billing_name = trim($first_name . ' ' . $last_name);
-    $cart_items = $_SESSION['cart'];
-    $total_amount = array_reduce($cart_items, function ($sum, $item) {
-        return $sum + ($item['price'] * $item['quantity']);
-    }, 0);
-    $products_data_json = json_encode($cart_items, JSON_UNESCAPED_UNICODE);
+    $pdo->beginTransaction();
 
-    // 5. Insert the order into the database using the correct, updated column names
-    $stmt = $pdo->prepare(
-        "INSERT INTO orders (user_id, billing_name, billing_email, billing_phone, billing_province, billing_city, billing_address, billing_postal_code, total_amount, items_json, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    // 5. User Handling (Guest or Logged in)
+    $user_id = $_SESSION['user_id'] ?? null;
+
+    if (!$user_id) {
+        // For guests, check if user exists by phone
+        $user_stmt = $pdo->prepare("SELECT id FROM users WHERE phone_number = ?");
+        $user_stmt->execute([$phone_number]);
+        $existing_user = $user_stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($existing_user) {
+            $user_id = $existing_user['id'];
+        } else {
+            // Create a new user
+            $user_insert_stmt = $pdo->prepare("INSERT INTO users (first_name, last_name, email, phone_number, is_admin) VALUES (?, ?, ?, ?, 0)");
+            $user_insert_stmt->execute([$first_name, $last_name, $email, $phone_number]);
+            $user_id = $pdo->lastInsertId();
+        }
+        // Log the new/guest user in
+        $_SESSION['user_id'] = $user_id;
+    }
+
+    // 6. Generate a unique tracking ID
+    $tracking_id = 'FL-' . strtoupper(bin2hex(random_bytes(5)));
+
+    // 7. Insert the order into the database
+    $order_stmt = $pdo->prepare(
+        "INSERT INTO orders (user_id, billing_name, billing_email, billing_phone, billing_province, billing_city, billing_address, billing_postal_code, total_amount, items_json, status, tracking_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)"
     );
 
-    $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
-    $status = 'Processing'; // Default status
-    $final_email = ($email !== false && $email !== '') ? $email : null; 
+    $full_name = $first_name . ' ' . $last_name;
+    $items_json_encoded = json_encode($items_for_json, JSON_UNESCAPED_UNICODE);
 
-    $stmt->execute([
+    $order_stmt->execute([
         $user_id,
-        $billing_name,
-        $final_email,
+        $full_name,
+        $email,
         $phone_number,
         $province,
         $city,
         $address_line,
         $postal_code,
-        $total_amount,
-        $products_data_json,
-        $status
+        $grand_total, // Storing the final amount including shipping
+        $items_json_encoded,
+        $tracking_id
     ]);
-    
-    $order_id = $pdo->lastInsertId();
-    $tracking_id = uniqid('ATMH-');
 
-    $update_stmt = $pdo->prepare("UPDATE orders SET tracking_id = ? WHERE id = ?");
-    $update_stmt->execute([$tracking_id, $order_id]);
-    
-    // 6. If user is logged in, save the new address for future use
-    if ($user_id) {
-        $stmt_check_addr = $pdo->prepare("SELECT COUNT(*) FROM user_addresses WHERE user_id = ? AND address_line = ? AND postal_code = ?");
-        $stmt_check_addr->execute([$user_id, $address_line, $postal_code]);
-        $address_exists = $stmt_check_addr->fetchColumn();
-
-        if ($address_exists == 0) {
-            $stmt_save_addr = $pdo->prepare(
-                "INSERT INTO user_addresses (user_id, first_name, last_name, phone_number, province, city, address_line, postal_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-            );
-            $stmt_save_addr->execute([
-                $user_id, $first_name, $last_name, $phone_number, $province, $city, $address_line, $postal_code
-            ]);
-        }
-    }
-
-    // 7. Commit transaction
     $pdo->commit();
 
-    // 8. Clear the cart and redirect with a success message including tracking ID
+    // 8. Clear cart and redirect to a success page
     unset($_SESSION['cart']);
-    $_SESSION['success_message'] = "سفارش شما با موفقیت ثبت شد! کد پیگیری شما: <strong>" . htmlspecialchars($tracking_id) . "</strong>";
-    // As I don't have SMS capability, I am displaying the tracking code here.
-    // You can later integrate an SMS service and send the tracking ID to $phone_number.
-    
-    header('Location: index.php');
-    exit;
+    unset($_SESSION['form_data']);
+
+    header('Location: track_order.php?tracking_id=' . $tracking_id);
+    exit();
 
 } catch (Exception $e) {
-    // 9. If anything fails, rollback and redirect with an error
     $pdo->rollBack();
-    error_log("Order Creation Failed: " . $e->getMessage()); // Log error for admin
-    $_SESSION['error_message'] = 'خطایی در ثبت سفارش رخ داد. لطفاً دوباره تلاش کنید.';
+    // Log the detailed error for developers
+    error_log('Checkout Error: ' . $e->getMessage());
+
+    // Set a user-friendly error message and redirect
+    $_SESSION['checkout_errors'] = ['یک خطای غیرمنتظره در هنگام ثبت سفارش رخ داد. لطفاً لحظاتی دیگر دوباره تلاش کنید.'];
+    $_SESSION['form_data'] = $_POST;
     header('Location: checkout.php');
-    exit;
+    exit();
 }

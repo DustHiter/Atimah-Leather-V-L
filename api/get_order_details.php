@@ -3,46 +3,70 @@ header('Content-Type: application/json');
 require_once '../db/config.php';
 require_once '../includes/jdf.php';
 
+// Function to translate order status
+function get_persian_status($status) {
+    switch ($status) {
+        case 'pending': return 'در انتظار پرداخت';
+        case 'processing': return 'در حال پردازش';
+        case 'shipped': return 'ارسال شده';
+        case 'completed': return 'تکمیل شده';
+        case 'cancelled': return 'لغو شده';
+        case 'refunded': return 'مسترد شده';
+        default: return 'نامشخص';
+    }
+}
+
 $response = ['success' => false, 'message' => 'Invalid request'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
-    $tracking_id = $data['tracking_id'] ?? '';
-    $phone = $data['phone'] ?? '';
-
-    if (empty($tracking_id) || empty($phone)) {
-        $response['message'] = 'کد رهگیری و شماره تلفن الزامی است.';
-        echo json_encode($response);
-        exit;
-    }
-
     try {
+        // Read JSON from the request body
+        $json_data = file_get_contents('php://input');
+        $data = json_decode($json_data, true);
+        $tracking_id = $data['tracking_id'] ?? '';
+
+        if (empty($tracking_id)) {
+            throw new Exception('کد رهگیری سفارش الزامی است.');
+        }
+
         $db = db();
         $stmt = $db->prepare(
-            "SELECT o.*, CONCAT(u.first_name, ' ', u.last_name) AS full_name, u.email 
+            "SELECT 
+                o.*,
+                o.billing_name AS full_name
              FROM orders o
-             JOIN users u ON o.user_id = u.id
-             WHERE o.tracking_id = :tracking_id AND o.billing_phone = :phone"
+             WHERE o.tracking_id = :tracking_id"
         );
-        $stmt->bindParam(':tracking_id', $tracking_id);
-        $stmt->bindParam(':phone', $phone);
-        $stmt->execute();
+        $stmt->execute([':tracking_id' => $tracking_id]);
         $order = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($order) {
-            $order_id = $order['id'];
-            $products_stmt = $db->prepare(
-                "SELECT p.name, p.price, p.image, oi.quantity, oi.color
-                 FROM order_items oi
-                 JOIN products p ON oi.product_id = p.id
-                 WHERE oi.order_id = :order_id"
-            );
-            $products_stmt->bindParam(':order_id', $order_id);
-            $products_stmt->execute();
-            $products = $products_stmt->fetchAll(PDO::FETCH_ASSOC);
+            $items_json = $order['items_json'];
+            $items = json_decode($items_json, true);
+            $products = [];
 
-            // Format creation date
+            if (is_array($items)) {
+                $product_stmt = $db->prepare("SELECT name, price, image_url FROM products WHERE id = :product_id");
+                foreach ($items as $item) {
+                    $product_stmt->execute([':product_id' => $item['id']]);
+                    $product_details = $product_stmt->fetch(PDO::FETCH_ASSOC);
+
+                    if ($product_details) {
+                        $products[] = [
+                            'name' => $product_details['name'],
+                            'price' => $product_details['price'],
+                            'image_url' => $product_details['image_url'],
+                            'quantity' => $item['quantity'],
+                            'color' => $item['color'] ?? null,
+                        ];
+                    }
+                }
+            }
+            
+            // Format data for response
             $order['created_at_jalali'] = jdate('Y/m/d H:i', strtotime($order['created_at']));
+            $order['status_jalali'] = get_persian_status($order['status']);
+
             
             $response['success'] = true;
             $response['message'] = 'سفارش یافت شد.';
@@ -53,11 +77,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } catch (PDOException $e) {
         error_log("Order tracking PDO error: " . $e->getMessage());
-        $response['message'] = 'خطا در برقراری ارتباط با سرور.';
+        $response['message'] = 'خطا در پایگاه داده رخ داد: ' . $e->getMessage();
+    } catch (Exception $e) {
+        error_log("Order tracking general error: " . $e->getMessage());
+        $response['message'] = $e->getMessage(); // Show the specific error message for now
     }
 
     echo json_encode($response);
-} else {
-    echo json_encode($response);
+    
 }
 ?>

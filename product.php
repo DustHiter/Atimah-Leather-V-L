@@ -50,18 +50,18 @@ if (!empty($product['colors'])) {
     <div class="row g-5">
         <div class="col-lg-6" data-aos="fade-right">
             <div class="product-image-gallery">
-                <img src="<?php echo htmlspecialchars($product['image_url']); ?>" class="img-fluid rounded-4 shadow-lg" alt="<?php echo htmlspecialchars($product['name']); ?>">
+                <img src="<?php echo htmlspecialchars($product['image_url']); ?>" class="img-fluid" alt="<?php echo htmlspecialchars($product['name']); ?>">
             </div>
         </div>
 
-        <div class="col-lg-6" data-aos="fade-left">
+        <div class="col-lg-6 product-details" data-aos="fade-left">
             <h1 class="display-5 fw-bold mb-3"><?php echo htmlspecialchars($product['name']); ?></h1>
             
             <div class="d-flex align-items-center mb-4">
-                <p class="display-6 text-primary fw-bold m-0"><?php echo number_format($product['price']); ?> تومان</p>
+                <p class="display-6 fw-bold m-0"><?php echo number_format($product['price']); ?> تومان</p>
             </div>
 
-            <p class="fs-5 mb-4"><?php echo nl2br(htmlspecialchars($product['description'])); ?></p>
+            <p class="fs-5 mb-4 text-muted"><?php echo nl2br(htmlspecialchars($product['description'])); ?></p>
 
             <form action="cart_handler.php" method="POST">
                 <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
@@ -72,22 +72,22 @@ if (!empty($product['colors'])) {
                         <h5 class="mb-3">انتخاب رنگ:</h5>
                         <div class="color-swatches">
                             <?php foreach ($available_colors as $index => $color_hex): ?>
-                                <input type="radio" class="btn-check" name="product_color" id="color_<?php echo $index; ?>" value="<?php echo htmlspecialchars($color_hex); ?>" <?php echo (count($available_colors) === 1) ? 'checked' : ''; ?>>
-                                <label class="btn" for="color_<?php echo $index; ?>" style="background-color: <?php echo htmlspecialchars($color_hex); ?>;" title="<?php echo htmlspecialchars($color_hex); ?>"></label>
+                                <input type="radio" class="btn-check" name="product_color" id="color_<?php echo $index; ?>" value="<?php echo htmlspecialchars($color_hex); ?>" autocomplete="off" <?php echo (count($available_colors) === 1) ? 'checked' : ''; ?>/>
+                                <label class="btn" for="color_<?php echo $index; ?>" style="background-color: <?php echo htmlspecialchars($color_hex); ?>;"></label>
                             <?php endforeach; ?>
                         </div>
                     </div>
                 <?php endif; ?>
 
                 <div class="row align-items-center mb-4">
-                    <div class="col-md-5 col-lg-4">
+                    <div class="col-md-5 col-lg-4 quantity-input-wrapper">
                          <label for="quantity" class="form-label fw-bold">تعداد:</label>
-                        <input type="number" name="quantity" id="quantity" class="form-control form-control-lg bg-dark text-center" value="1" min="1" max="10">
+                        <input type="number" name="quantity" id="quantity" class="form-control quantity-input text-center" value="1" min="1" max="10">
                     </div>
                 </div>
 
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-shopping-cart me-2"></i> افزودن به سبد خرید</button>
+                <div class="d-grid gap-2 add-to-cart-btn">
+                    <button type="submit" class="btn btn-primary"><i class="ri-shopping-bag-add-line"></i> افزودن به سبد خرید</button>
                 </div>
             </form>
 
@@ -105,16 +105,17 @@ document.addEventListener('DOMContentLoaded', function() {
         $flash_message = $_SESSION['flash_message'];
         unset($_SESSION['flash_message']);
         echo "Swal.fire({
-            title: '" . addslashes($flash_message['message']) . "',
-            icon: '" . $flash_message['type'] . "',
+            title: '".addslashes($flash_message['message'])."',
+            icon: '". $flash_message['type'] ."',
             toast: true,
             position: 'top-start',
             showConfirmButton: false,
             timer: 4000,
             timerProgressBar: true,
+            showCloseButton: true,
             didOpen: (toast) => {
-                toast.onmouseenter = Swal.stopTimer;
-                toast.onmouseleave = Swal.resumeTimer;
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
             },
             customClass: {
                 popup: 'dark-theme-toast'
@@ -152,46 +153,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-<style>
-    body.swal2-shown > [aria-hidden="true"] {
-        filter: blur(5px);
-        transition: filter 0.3s ease-out;
-    }
-    .swal2-popup.dark-theme-popup {
-        background-color: #2a2a2e !important;
-        border-radius: 20px;
-    }
-    .swal2-title.dark-theme-title {
-        color: #e8e6e3 !important;
-    }
-    .swal2-html-container.dark-theme-content {
-        color: #b0b0b0 !important;
-    }
-    .swal2-confirm.dark-theme-button {
-        background-color: var(--primary-color) !important;
-        border-radius: 10px;
-        padding: .6em 2em;
-        box-shadow: none !important;
-        transition: background-color 0.2s;
-    }
-     .swal2-confirm.dark-theme-button:hover {
-        background-color: #c89c6c !important; /* A slightly lighter shade of primary for hover */
-    }
-
-    /* Toast Styles */
-    .swal2-toast.dark-theme-toast {
-        background-color: #2a2a2e !important;
-        color: #e8e6e3 !important;
-        border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
-    .swal2-toast.dark-theme-toast .swal2-title {
-        color: #e8e6e3 !important;
-        font-size: 1em;
-    }
-    .swal2-toast.dark-theme-toast .swal2-timer-progress-bar {
-        background-color: var(--primary-color);
-    }
-</style>
 
 <?php require_once 'includes/footer.php'; ?>

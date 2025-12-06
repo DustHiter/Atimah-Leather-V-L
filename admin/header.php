@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پنل مدیریت</title>
+    <title><?php echo isset($page_title) ? $page_title . ' - ' : ''; ?>پنل مدیریت آتیمه</title>
     <meta name="robots" content="noindex, nofollow">
 
-    <!-- Unified Stylesheet -->
+    <!-- Main Admin Stylesheet -->
     <link rel="stylesheet" href="assets/css/admin_style.css?v=<?php echo time(); ?>">
 
     <!-- SweetAlert2 -->
@@ -18,5 +18,5 @@
 <body class="admin-dark-theme">
 
 <div class="admin-wrapper">
-    <?php require_once 'nav.php'; ?>
-    <div class="admin-main-content">
+    <?php require_once 'nav.php'; // The sidebar is included here ?>
+    <main class="admin-main-content">

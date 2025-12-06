@@ -102,7 +102,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <button class="modal-close">&times;</button>
         </div>
         <div class="modal-body">
-            <h6>اطلاعات مشتری</h6>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="m-0">اطلاعات مشتری</h6>
+                <span class="text-muted small">کد پیگیری: <strong><?php echo htmlspecialchars($order['tracking_id']); ?></strong></span>
+            </div>
             <p><strong>نام:</strong> <?php echo htmlspecialchars($order['customer_display_name']); ?><br>
             <strong>آدرس:</strong> <?php echo htmlspecialchars($order['billing_address'] . ", " . $order['billing_city'] . ", " . $order['billing_province']); ?><br>
             <strong>تلفن:</strong> <?php echo htmlspecialchars($order['billing_phone']); ?></p>

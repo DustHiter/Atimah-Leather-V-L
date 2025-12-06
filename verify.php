@@ -15,17 +15,15 @@ $page_title = "تایید کد یکبار مصرف";
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $page_title; ?> - آتیمه</title>
+    <title><?= $page_title; ?> - آتیمه</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
-    <!-- Vazirmatn Font -->
-    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <!-- Remixicon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
     <!-- Main Custom CSS (for variables) -->
-    <link rel="stylesheet" href="assets/css/custom.css?v=<?php echo time(); ?>">
-    <!-- Custom Auth CSS -->
-    <link rel="stylesheet" href="assets/css/auth_style.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="assets/css/dark_luxury.css?v=<?= time(); ?>">
 </head>
-<body>
+<body class="dark-luxury">
 
     <div class="auth-wrapper">
         <div class="auth-bg">
@@ -37,24 +35,25 @@ $page_title = "تایید کد یکبار مصرف";
 
         <div class="auth-form-wrapper">
             <div class="auth-form-container">
-                <div class="form-header text-center">
+                <div class="form-header">
+                     <div class="logo">آتیمه</div>
                     <h2>تایید کد</h2>
-                    <p>کد ۶ رقمی ارسال شده به <strong><?php echo $email_for_display; ?></strong> را وارد کنید.</p>
+                    <p>کد ۶ رقمی ارسال شده به <strong class="d-block mt-2"><?= $email_for_display; ?></strong> را وارد کنید.</p>
                 </div>
 
                 <?php if(isset($_SESSION['flash_message'])): ?>
-                    <div class="alert alert-<?php echo $_SESSION['flash_message']['type']; ?> alert-dismissible fade show" role="alert">
-                        <?php echo htmlspecialchars($_SESSION['flash_message']['message']); ?>
+                    <div class="alert alert-<?= htmlspecialchars($_SESSION['flash_message']['type']); ?> alert-dismissible fade show" role="alert">
+                        <?= htmlspecialchars($_SESSION['flash_message']['message']); ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                     <?php unset($_SESSION['flash_message']); ?>
                 <?php endif; ?>
 
                 <form action="auth_handler.php?action=verify_otp" method="POST">
-                    <input type="hidden" name="email" value="<?php echo $email_for_display; ?>">
+                    <input type="hidden" name="email" value="<?= $email_for_display; ?>">
                     <div class="form-group">
                          <label for="otp_code" class="form-label visually-hidden">کد تایید</label>
-                        <input type="text" class="form-control text-center" id="otp_code" name="otp_code" placeholder="- - - - - -" required pattern="\d{6}" maxlength="6">
+                        <input type="text" class="form-control otp-input" id="otp_code" name="otp_code" placeholder="- - - - - -" required pattern="\d{6}" maxlength="6" autocomplete="one-time-code">
                     </div>
                     
                     <div class="d-grid mt-4">
@@ -63,7 +62,7 @@ $page_title = "تایید کد یکبار مصرف";
                 </form>
                 
                 <div class="auth-footer">
-                    <p>ایمیل را اشتباه وارد کردید؟ <a href="login.php">بازگشت</a></p>
+                    <p><a href="login.php"><i class="ri-arrow-right-line"></i> بازگشت و اصلاح ایمیل</a></p>
                 </div>
             </div>
         </div>

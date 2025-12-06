@@ -1,66 +1,63 @@
 <?php
+$page_title = 'داشبورد';
 require_once __DIR__ . '/header.php';
 ?>
 
+
+
+
 <div class="admin-header">
-    <h1>گزارش‌ها</h1>
+    <h1><?php echo $page_title; ?></h1>
 </div>
 
 <div id="dashboard-error" class="card d-none" style="color: var(--admin-danger);"><div class="card-body"></div></div>
 
-<style>
-.stat-cards-grid-reports {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-</style>
+<div class="dashboard-container">
+    <div class="stat-cards-grid-reports">
+        <div class="stat-card">
+            <div class="icon-container" style="background-color: #28a74555;"><i class="fas fa-dollar-sign" style="color: #28a745;"></i></div>
+            <div class="stat-info">
+                <p>مجموع فروش (تحویل شده)</p>
+                <h3 id="total-sales">...</h3>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="icon-container" style="background-color: #17a2b855;"><i class="fas fa-users" style="color: #17a2b8;"></i></div>
+            <div class="stat-info">
+                <p>مجموع کاربران</p>
+                <h3 id="total-users">...</h3>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="icon-container" style="background-color: #007bff55;"><i class="fas fa-truck" style="color: #007bff;"></i></div>
+            <div class="stat-info">
+                <p>سفارشات در حال ارسال</p>
+                <h3 id="shipped-orders">...</h3>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="icon-container" style="background-color: #dc354555;"><i class="fas fa-times-circle" style="color: #dc3545;"></i></div>
+            <div class="stat-info">
+                <p>سفارشات لغو شده</p>
+                <h3 id="cancelled-orders">...</h3>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="icon-container" style="background-color: #ffc10755;"><i class="fas fa-spinner" style="color: #ffc107;"></i></div>
+            <div class="stat-info">
+                <p>سفارشات در حال پردازش</p>
+                <h3 id="processing-orders">...</h3>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="icon-container" style="background-color: #6f42c155;"><i class="fas fa-eye" style="color: #6f42c1;"></i></div>
+            <div class="stat-info">
+                <p>کل بازدید صفحات</p>
+                <h3 id="total-page-views">...</h3>
+            </div>
+        </div>
+    </div>
 
-<div class="stat-cards-grid-reports">
-    <div class="stat-card">
-        <div class="icon bg-success"><i class="fas fa-dollar-sign"></i></div>
-        <div class="stat-info">
-            <p>مجموع فروش (تحویل شده)</p>
-            <h3 id="total-sales">...</h3>
-        </div>
-    </div>
-    <div class="stat-card">
-        <div class="icon bg-info"><i class="fas fa-users"></i></div>
-        <div class="stat-info">
-            <p>مجموع کاربران</p>
-            <h3 id="total-users">...</h3>
-        </div>
-    </div>
-    <div class="stat-card">
-        <div class="icon bg-primary"><i class="fas fa-truck"></i></div>
-        <div class="stat-info">
-            <p>سفارشات در حال ارسال</p>
-            <h3 id="shipped-orders">...</h3>
-        </div>
-    </div>
-    <div class="stat-card">
-        <div class="icon bg-danger"><i class="fas fa-times-circle"></i></div>
-        <div class="stat-info">
-            <p>سفارشات لغو شده</p>
-            <h3 id="cancelled-orders">...</h3>
-        </div>
-    </div>
-    <div class="stat-card">
-        <div class="icon bg-warning"><i class="fas fa-spinner"></i></div>
-        <div class="stat-info">
-            <p>سفارشات در حال پردازش</p>
-            <h3 id="processing-orders">...</h3>
-        </div>
-    </div>
-    <div class="stat-card">
-        <div class="icon" style="background-color: #6f42c1;"><i class="fas fa-eye"></i></div>
-        <div class="stat-info">
-            <p>کل بازدید صفحات</p>
-            <h3 id="total-page-views">...</h3>
-        </div>
-    </div>
-</div>
 
 <div class="chart-container" style="position: relative; height:40vh; max-height: 450px;">
     <h5>نمودار فروش ماهانه (سفارشات تحویل شده)</h5>

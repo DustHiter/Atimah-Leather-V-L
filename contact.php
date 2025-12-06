@@ -11,11 +11,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['contact_form'])) {
     $message = trim(filter_input(INPUT_POST, 'message', FILTER_SANITIZE_STRING));
 
     if (empty($name) || empty($email) || empty($message)) {
-        $_SESSION['flash_message'] = ['type' => 'error', 'message' => 'لطفاً تمام فیلدها را پر کنید.'];
+        $_SESSION['flash_message'] = ['type' => 'warning', 'message' => 'لطفاً تمام فیلدها را پر کنید.'];
     } elseif (!$email) {
         $_SESSION['flash_message'] = ['type' => 'error', 'message' => 'آدرس ایمیل وارد شده معتبر نیست.'];
     } else {
-        $to_email = getenv('MAIL_TO') ?: 'support@atimeh.com';
+        $to_email = getenv('MAIL_TO') ?: 'support@atimeh.com'; // Fallback email
         $subject = "پیام جدید از فرم تماس وب‌سایت";
         $email_result = MailService::sendContactMessage($name, $email, $message, $to_email, $subject);
 
@@ -27,12 +27,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['contact_form'])) {
         }
     }
     
+    // Redirect to the same page to prevent form resubmission
     header("Location: contact.php");
     exit();
 }
 
+// Check for flash message
 $flash_message = $_SESSION['flash_message'] ?? null;
 if ($flash_message) {
+    // Clear the message from session so it doesn't show again
     unset($_SESSION['flash_message']);
 }
 ?>
@@ -49,21 +52,21 @@ if ($flash_message) {
                 <div class="contact-info h-100 d-flex flex-column justify-content-center">
                     <h3 class="mb-4">راه‌های ارتباطی</h3>
                     <div class="d-flex align-items-start mb-4">
-                        <i class="fas fa-map-marker-alt mt-1 me-3"></i>
+                        <i class="ri-map-pin-line mt-1 me-3"></i>
                         <div>
                             <strong>آدرس:</strong>
                             <p class="text-muted mb-0">تهران، خیابان هنر، کوچه خلاقیت، پلاک ۱۲</p>
                         </div>
                     </div>
                     <div class="d-flex align-items-start mb-4">
-                        <i class="fas fa-envelope mt-1 me-3"></i>
+                        <i class="ri-mail-line mt-1 me-3"></i>
                         <div>
                             <strong>ایمیل:</strong>
                             <p class="mb-0"><a href="mailto:info@atimeh.com">info@atimeh.com</a></p>
                         </div>
                     </div>
                     <div class="d-flex align-items-start mb-4">
-                        <i class="fas fa-phone-alt mt-1 me-3"></i>
+                        <i class="ri-phone-line mt-1 me-3"></i>
                         <div>
                             <strong>تلفن:</strong>
                             <p class="mb-0"><a href="tel:+982112345678">۰۲۱-۱۲۳۴۵۶۷۸</a></p>
@@ -71,17 +74,17 @@ if ($flash_message) {
                     </div>
                     <hr class="my-4" style="border-color: var(--luxury-border);">
                     <h4 class="h5 mb-3">ما را دنبال کنید</h4>
-                    <div class="d-flex">
-                        <a href="#" class="btn btn-outline-primary rounded-circle me-2" style="width: 40px; height: 40px; line-height: 25px; text-align: center; padding: 5px;"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="btn btn-outline-primary rounded-circle me-2" style="width: 40px; height: 40px; line-height: 25px; text-align: center; padding: 5px;"><i class="fab fa-telegram"></i></a>
-                        <a href="#" class="btn btn-outline-primary rounded-circle" style="width: 40px; height: 40px; line-height: 25px; text-align: center; padding: 5px;"><i class="fab fa-whatsapp"></i></a>
+                    <div class="d-flex gap-2">
+                        <a href="#" class="social-btn"><i class="ri-instagram-line"></i></a>
+                        <a href="#" class="social-btn"><i class="ri-telegram-line"></i></a>
+                        <a href="#" class="social-btn"><i class="ri-whatsapp-line"></i></a>
                     </div>
                 </div>
             </div>
             <div class="col-lg-7">
                 <h3 class="mb-4">فرم تماس</h3>
                 <form action="contact.php" method="POST">
-                    <input type="hidden" name="contact_form">
+                    <input type="hidden" name="contact_form" value="1">
                     <div class="mb-4">
                         <label for="name" class="form-label">نام شما</label>
                         <input type="text" class="form-control" id="name" name="name" required>
@@ -103,25 +106,28 @@ if ($flash_message) {
     </div>
 </div>
 
+<!-- SweetAlert for flash messages -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     <?php if ($flash_message): ?>
-    const swalConfig = {
-        title: '<?php echo $flash_message["type"] === "success" ? "موفق" : "خطا"; ?>',
-        text: '<?php echo addslashes($flash_message["message"]); ?>',
+    Swal.fire({
+        title: '<?php echo addslashes($flash_message["message"]); ?>',
         icon: '<?php echo $flash_message["type"]; ?>',
-        confirmButtonText: 'باشه',
-    };
-
-    // Apply dark theme to SweetAlert2
-    if (document.body.classList.contains('dark-luxury')) {
-        swalConfig.background = 'var(--luxury-surface)';
-        swalConfig.color = 'var(--luxury-text)';
-        swalConfig.confirmButtonColor = 'var(--luxury-primary)';
-    }
-
-    Swal.fire(swalConfig);
+        toast: true,
+        position: 'top-start',
+        showConfirmButton: false,
+        timer: 5000,
+        timerProgressBar: true,
+        showCloseButton: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+        },
+        customClass: {
+            popup: 'dark-theme-toast'
+        }
+    });
     <?php endif; ?>
 });
 </script>

@@ -23,7 +23,7 @@ $total_price = 0;
         <?php else: ?>
             <div class="text-center mb-5">
                 <h1 class="fw-bold display-5">سبد خرید شما</h1>
-                <p class="text-white-50 fs-5">جزئیات سفارش خود را بررسی و نهایی کنید.</p>
+                <p class="text-muted fs-5">جزئیات سفارش خود را بررسی و نهایی کنید.</p>
             </div>
             <div class="row g-5">
                 <div class="col-lg-8">
@@ -48,10 +48,10 @@ $total_price = 0;
                                 </div>
                                 <div class="col-md-4 col-9 cart-item-details">
                                     <h5><a href="product.php?id=<?php echo $item['product_id']; ?>"><?php echo htmlspecialchars($item['name']); ?></a></h5>
-                                    <?php if (!empty($item['color'])): ?>
+                                    <?php if (!empty($item['color'])) : ?>
                                         <div class="d-flex align-items-center">
-                                            <small class="text-white-50 me-2">رنگ:</small>
-                                            <span class="d-inline-block rounded-circle border" style="width: 20px; height: 20px; background-color: <?php echo htmlspecialchars($item['color']); ?>;"></span>
+                                            <small class="text-muted me-2">رنگ:</small>
+                                            <span class="cart-item-color-swatch" style="background-color: <?php echo htmlspecialchars($item['color']); ?>;"></span>
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -92,7 +92,7 @@ $total_price = 0;
                             </div>
                         </div>
                         <div class="d-grid mt-4">
-                            <a href="checkout.php" class="btn btn-primary btn-lg btn-checkout">ادامه و پرداخت</a>
+                            <a href="checkout.php" class="btn btn-primary btn-lg btn-checkout"><i class="ri-secure-payment-line me-2"></i>ادامه و پرداخت</a>
                         </div>
                     </div>
                 </div>

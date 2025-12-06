@@ -1,185 +1,185 @@
 <?php
 session_start();
 require_once 'db/config.php';
+require_once 'includes/header.php';
 
-// Redirect if cart is empty
+// 1. Check if cart exists and is not empty. If not, redirect to shop.
 if (empty($_SESSION['cart'])) {
     header('Location: shop.php');
-    exit;
+    exit();
 }
 
 $cart_items = $_SESSION['cart'];
-$total_price = array_reduce($cart_items, function ($sum, $item) {
-    return $sum + ($item['price'] * $item['quantity']);
-}, 0);
+$product_details = [];
+$total_price = 0;
 
-// User and address data
-$logged_in_user = null;
-$user_addresses = [];
-$is_logged_in = isset($_SESSION['user_id']);
+// 2. Process cart items directly from the session
+foreach ($cart_items as $cart_item_id => $item) {
+    // Ensure item has required data
+    if (!isset($item['price'], $item['quantity'], $item['name'], $item['image_url'])) {
+        // Skip malformed items
+        continue;
+    }
 
-if ($is_logged_in) {
+    $item_total = $item['price'] * $item['quantity'];
+    $total_price += $item_total;
+
+    // Store details for display
+    $product_details[] = [
+        'id' => $item['product_id'],
+        'name' => $item['name'],
+        'price' => $item['price'],
+        'image_url' => $item['image_url'],
+        'quantity' => $item['quantity'],
+        'color' => $item['color'] ?? '', // Handle case where color might not be set
+        'total' => $item_total
+    ];
+}
+
+
+// 3. If after all checks, product_details is empty (e.g. invalid items in cart), redirect.
+if (empty($product_details)) {
+    // Clear the invalid cart and redirect
+    unset($_SESSION['cart']);
+    header('Location: shop.php');
+    exit();
+}
+
+// 4. Fetch user data if logged in
+$user_id = $_SESSION['user_id'] ?? null;
+$user = [];
+$address = [];
+
+if ($user_id) {
     try {
         $pdo = db();
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-        $stmt->execute([$_SESSION['user_id']]);
-        $logged_in_user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $user_stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+        $user_stmt->execute([$user_id]);
+        $user = $user_stmt->fetch(PDO::FETCH_ASSOC) ?: [];
 
-        $stmt = $pdo->prepare("SELECT * FROM user_addresses WHERE user_id = ? ORDER BY is_default DESC, id DESC");
-        $stmt->execute([$_SESSION['user_id']]);
-        $user_addresses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $address_stmt = $pdo->prepare("SELECT * FROM user_addresses WHERE user_id = ? ORDER BY id DESC LIMIT 1");
+        $address_stmt->execute([$user_id]);
+        $address = $address_stmt->fetch(PDO::FETCH_ASSOC) ?: [];
     } catch (PDOException $e) {
-        // In a real app, log this error
-        die("Error fetching user data.");
+        error_log("Checkout user fetch error: " . $e->getMessage());
+        // Do not block the page, guest checkout is still possible
     }
 }
 
-$page_title = 'تکمیل سفارش';
-require_once 'includes/header.php';
+
+$shipping_cost = 50000;
+$grand_total = $total_price + $shipping_cost;
+
 ?>
 
-<div class="container my-5 bg-dark text-light">
-    <?php
-    if (isset($_SESSION['error_message'])) {
-        echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">' . htmlspecialchars($_SESSION['error_message']) . '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
-        unset($_SESSION['error_message']);
-    }
-    ?>
-    <div class="text-center mb-5">
-        <h1 class="fw-bold">تکمیل فرآیند خرید</h1>
-        <p class="text-muted">فقط یک قدم دیگر تا نهایی شدن سفارش شما باقیست.</p>
-    </div>
+<main class="container my-5 checkout-page-wrapper">
+    <div class="row">
+        <!-- Billing Details Column -->
+        <div class="col-lg-8">
+            <h2 class="mb-4">جزئیات صورتحساب</h2>
 
-    <form action="checkout_handler.php" method="POST">
-        <div class="row g-5">
-            <!-- Shipping Details -->
-            <div class="col-lg-7">
-                <h3 class="mb-4">اطلاعات ارسال</h3>
+            <?php
+            if (!empty($_SESSION['checkout_errors'])) {
+                echo '<div class="alert alert-danger"><ul>';
+                foreach ($_SESSION['checkout_errors'] as $error) {
+                    echo '<li>' . htmlspecialchars($error) . '</li>';
+                }
+                echo '</ul></div>';
+                // Unset the session variable so it doesn't show again on refresh
+                unset($_SESSION['checkout_errors']);
+            }
+            ?>
+            
+            <form id="checkout-form" action="checkout_handler.php" method="POST">
 
-                <?php if ($is_logged_in && !empty($user_addresses)): ?>
-                    <div class="mb-4">
-                        <label for="saved_address" class="form-label">انتخاب آدرس</label>
-                        <select class="form-select bg-dark text-light" id="saved_address">
-                            <option value="">یک آدرس انتخاب کنید یا فرم زیر را پر کنید...</option>
-                            <?php foreach ($user_addresses as $addr): ?>
-                                <option value='<?php echo json_encode($addr, JSON_HEX_APOS | JSON_HEX_QUOT); ?>'>
-                                    <?php echo htmlspecialchars($addr['province'] . '، ' . $addr['city'] . '، ' . $addr['address_line']); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                <?php endif; ?>
-
-                <div class="card bg-dark border-secondary shadow-sm rounded-4">
-                    <div class="card-body p-4">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="first_name" class="form-label">نام</label>
-                                <input type="text" class="form-control bg-dark text-light" id="first_name" name="first_name" value="<?php echo htmlspecialchars($logged_in_user['first_name'] ?? ''); ?>" required>
-                                <div class="invalid-feedback"></div>
+                <div class="checkout-card">
+                    <div class="card-header">اطلاعات تماس</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="firstName" class="form-label">نام</label>
+                                <input type="text" class="form-control" id="firstName" name="first_name" value="<?= htmlspecialchars($user['first_name'] ?? '') ?>" required>
                             </div>
-                            <div class="col-md-6">
-                                <label for="last_name" class="form-label">نام خانوادگی</label>
-                                <input type="text" class="form-control bg-dark text-light" id="last_name" name="last_name" value="<?php echo htmlspecialchars($logged_in_user['last_name'] ?? ''); ?>" required>
-                                <div class="invalid-feedback"></div>
+                            <div class="col-md-6 mb-3">
+                                <label for="lastName" class="form-label">نام خانوادگی</label>
+                                <input type="text" class="form-control" id="lastName" name="last_name" value="<?= htmlspecialchars($user['last_name'] ?? '') ?>" required>
                             </div>
-                            <div class="col-md-6">
-                                <label for="phone_number" class="form-label">تلفن همراه</label>
-                                <input type="tel" class="form-control bg-dark text-light" id="phone_number" name="phone_number" value="<?php echo htmlspecialchars($logged_in_user['phone_number'] ?? ''); ?>" required>
-                                <div class="invalid-feedback"></div>
-                                <?php if (!$is_logged_in): ?>
-                                    <div class="form-text text-info fw-bold">توجه: فقط با شماره تلفن همراه میتوان سفارش را رهگیری کرد.</div>
-                                <?php endif; ?>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="province" class="form-label">استان</label>
-                                <input type="text" class="form-control bg-dark text-light" id="province" name="province" required>
-                                <div class="invalid-feedback"></div>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="city" class="form-label">شهر</label>
-                                <input type="text" class="form-control bg-dark text-light" id="city" name="city" required>
-                                <div class="invalid-feedback"></div>
-                            </div>
-                             <div class="col-md-6">
-                                <label for="address_line" class="form-label">آدرس دقیق</label>
-                                <textarea class="form-control bg-dark text-light" id="address_line" name="address_line" rows="2" required></textarea>
-                                <div class="invalid-feedback"></div>
-                            </div>
-                            <div class="col-md-5">
-                                <label for="postal_code" class="form-label">کد پستی</label>
-                                <input type="text" class="form-control bg-dark text-light" id="postal_code" name="postal_code" required>
-                                <div class="invalid-feedback"></div>
-                            </div>
-                            <div class="col-md-7">
+                            <div class="col-md-6 mb-3">
                                 <label for="email" class="form-label">ایمیل (اختیاری)</label>
-                                <input type="email" class="form-control bg-dark text-light" id="email" name="email" value="<?php echo htmlspecialchars($logged_in_user['email'] ?? ''); ?>">
-                                <div class="invalid-feedback"></div>
+                                <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($user['email'] ?? '') ?>">
                             </div>
-                        </div>
-                         <div class="form-check mt-4">
-                            <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
-                            <label class="form-check-label" for="terms">
-                                با <a href="#">قوانین و مقررات</a> سایت موافقم.
-                            </label>
-                            <div class="invalid-feedback">لطفاً قوانین و مقررات را بپذیرید.</div>
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">تلفن همراه</label>
+                                <input type="tel" class="form-control" id="phone" name="phone_number" value="<?= htmlspecialchars($address['phone_number'] ?? $user['phone_number'] ?? '') ?>" required>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Order Summary -->
-            <div class="col-lg-5">
-                 <div class="card bg-dark border-secondary shadow-sm rounded-4 sticky-top" style="top: 100px;">
-                    <div class="card-body p-4">
-                        <h4 class="card-title fw-bold mb-4">خلاصه سفارش</h4>
-                        <ul class="list-group list-group-flush mb-4">
-                            <?php foreach($cart_items as $item): ?>
-                            <li class="list-group-item bg-dark text-light d-flex justify-content-between align-items-center px-0">
-                                <div class="d-flex align-items-center">
-                                    <img src="<?php echo htmlspecialchars($item['image_url']); ?>" width="60" class="rounded-3 me-3" alt="<?php echo htmlspecialchars($item['name']); ?>">
-                                    <div>
-                                        <?php echo htmlspecialchars($item['name']); ?>
-                                        <small class="d-block text-muted">تعداد: <?php echo $item['quantity']; ?></small>
-                                        <?php if (!empty($item['color'])): ?>
-                                            <div class="d-flex align-items-center gx-2 mt-1">
-                                                <small class="text-muted">رنگ:</small>
-                                                <span class="d-inline-block rounded-circle border ms-2" style="width: 15px; height: 15px; background-color: <?php echo htmlspecialchars($item['color']); ?>;"></span>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <span class="fw-bold"><?php echo number_format($item['price'] * $item['quantity']); ?></span>
-                            </li>
-                            <?php endforeach; ?>
-                        </ul>
-                        
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted">جمع کل</span>
-                            <span><?php echo number_format($total_price); ?> تومان</span>
+                <div class="checkout-card">
+                    <div class="card-header">آدرس جهت ارسال</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="address" class="form-label">آدرس</label>
+                            <input type="text" class="form-control" id="address" name="address_line" placeholder="خیابان اصلی، کوچه فرعی، پلاک ۱۲۳" value="<?= htmlspecialchars($address['address_line'] ?? '') ?>" required>
                         </div>
-                        <div class="d-flex justify-content-between mb-3">
-                            <span class="text-muted">هزینه ارسال</span>
-                            <span class="text-success">رایگان</span>
-                        </div>
-                        <hr class="border-secondary">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <span class="h5 fw-bold">مبلغ نهایی</span>
-                            <span class="h5 fw-bolder text-primary"><?php echo number_format($total_price); ?> تومان</span>
-                        </div>
-                        <div class="d-grid">
-                             <button type="submit" class="btn btn-primary btn-lg">ثبت نهایی سفارش</button>
-                        </div>
-                         <div class="text-center mt-3">
-                            <small class="text-muted"><i class="ri-lock-line me-1"></i> پرداخت امن و مطمئن</small>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="city" class="form-label">شهر</label>
+                                <input type="text" class="form-control" id="city" name="city" value="<?= htmlspecialchars($address['city'] ?? '') ?>" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="state" class="form-label">استان</label>
+                                <input type="text" class="form-control" id="state" name="province" value="<?= htmlspecialchars($address['province'] ?? '') ?>" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="zip" class="form-label">کد پستی</label>
+                                <input type="text" class="form-control" id="zip" name="postal_code" value="<?= htmlspecialchars($address['postal_code'] ?? '') ?>" required>
+                            </div>
                         </div>
                     </div>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- Order Summary Column -->
+        <div class="col-lg-4">
+            <div class="order-summary-card checkout-order-summary">
+                <h3 class="card-title">خلاصه سفارش شما</h3>
+                <ul class="summary-item-list">
+                    <?php foreach ($product_details as $item) : ?>
+                        <li>
+                            <span class="product-name"><?= htmlspecialchars($item['name']) ?> <span class="text-muted">(x<?= $item['quantity'] ?>)</span></span>
+                            <span class="product-total">T <?= number_format($item['total']) ?></span>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+
+                <div class="summary-totals">
+                    <div class="total-row">
+                        <span class="label">جمع کل</span>
+                        <span class="value">T <?= number_format($total_price) ?></span>
+                    </div>
+                    <div class="total-row">
+                        <span class="label">هزینه ارسال</span>
+                        <span class="value">T <?= number_format($shipping_cost) ?></span>
+                    </div>
+                    <div class="total-row grand-total mt-3">
+                        <span class="label">مبلغ قابل پرداخت</span>
+                        <span class="value">T <?= number_format($grand_total) ?></span>
+                    </div>
+                </div>
+
+                <div class="d-grid mt-4">
+                    <button type="submit" form="checkout-form" class="btn btn-primary btn-lg">
+                        <i class="ri-secure-payment-line me-2"></i>
+                        پرداخت و ثبت نهایی سفارش
+                    </button>
                 </div>
             </div>
         </div>
-    </form>
-</div>
-
-<script src="assets/js/checkout_validation.js?v=<?php echo time(); ?>"></script>
+    </div>
+</main>
 
 <?php require_once 'includes/footer.php'; ?>
