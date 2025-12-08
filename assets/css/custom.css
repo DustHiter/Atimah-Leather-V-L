@@ -1,4 +1,11 @@
-/* Resetting styles for the new theme. */
+:root {
+    --status-default: #444;
+    --status-default-dark: #6c757d;
+    --status-processing: #ffc107;
+    --status-shipped: #0d6efd;
+    --status-completed: #198754;
+    --status-cancelled: #dc3545;
+}
 
 .about-us-list {
     width: 80vw;
@@ -56,8 +63,6 @@
         width: 80%;
     }
 }
-
-/* --- Order Tracking Modal Styles --- */
 
 .tracking-modal-container {
     position: fixed;
@@ -181,7 +186,6 @@
     margin-left: 8px;
 }
 
-/* --- Status Tracker --- */
 .status-tracker {
     position: relative;
     display: flex;
@@ -199,7 +203,7 @@
     width: calc(100% - 40px);
     margin: 0 20px;
     height: 4px;
-    background-color: #444;
+    background-color: var(--status-default);
     z-index: 1;
 }
 
@@ -209,9 +213,8 @@
     transform: translateY(-50%);
     right: 20px;
     height: 4px;
-    background-color: var(--bs-primary);
     z-index: 2;
-    transition: width 0.5s ease;
+    transition: width 0.5s ease, background-color 0.5s ease;
 }
 
 .status-step {
@@ -225,11 +228,11 @@
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background-color: #444;
+    background-color: var(--status-default);
     border: 3px solid #2c2c2c;
     margin: 0 auto;
     transform: translateY(-8px);
-    transition: background-color 0.5s ease;
+    transition: background-color 0.5s ease, box-shadow 0.3s ease;
 }
 
 .status-step .label {
@@ -240,34 +243,24 @@
     transition: color 0.5s ease;
 }
 
-/* State Styling */
-.status-step.completed .dot {
-    background-color: var(--bs-primary);
-}
-
-.status-step.active .dot {
-     background-color: #fff;
-    box-shadow: 0 0 10px var(--bs-primary);
-}
-
-.status-step.completed .label {
+.status-step.completed .label,
+.status-step.active .label {
     color: #f0f0f0;
     font-weight: 500;
 }
 
-.status-tracker.is-cancelled ~ .status-step:not([data-status="cancelled"]) {
-    opacity: 0.3;
-}
-.status-tracker.is-cancelled .status-step[data-status="cancelled"] .dot {
-    background-color: var(--bs-danger);
-}
-.status-tracker.is-cancelled .status-step[data-status="cancelled"] .label {
-    color: var(--bs-danger);
-    font-weight: bold;
+.status-step.active .dot {
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
 }
 
+.status-tracker.is-cancelled .status-step {
+    opacity: 0.5;
+}
 
-/* --- Products List --- */
+.status-tracker.is-cancelled .label {
+    color: var(--status-cancelled);
+}
+
 #modal-products-list {
     display: flex;
     flex-direction: column;
@@ -308,7 +301,6 @@
     font-weight: bold;
 }
 
-/* --- Product Color Dot --- */
 .product-meta {
     display: flex;
     align-items: center;
@@ -330,4 +322,24 @@
     border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.2);
     display: inline-block;
+}
+
+@media (max-width: 768px) {
+    footer {
+        text-align: center;
+    }
+
+    footer .row > * {
+        margin-bottom: 1.5rem;
+    }
+
+    footer .row {
+        justify-content: center;
+    }
+
+    /* Center social icons and contact list items on mobile */
+    footer .social-icons,
+    footer .list-unstyled .d-flex {
+        justify-content: center;
+    }
 }

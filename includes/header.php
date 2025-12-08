@@ -108,20 +108,18 @@ $page_title = $page_title ?? 'فروشگاه آتیمه'; // Default title
                     </a>
 
                     <?php if (isset($_SESSION['user_id'])): ?>
-                        <div class="dropdown ms-3">
-                            <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="ri-user-line fs-5 me-1"></i>
-                                <span><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
+                        <a href="profile.php" class="ms-4 d-flex align-items-center text-decoration-none" title="حساب کاربری">
+                            <i class="ri-user-line fs-5 me-2"></i>
+                            <span><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
+                        </a>
+                        <?php if (!empty($_SESSION['is_admin'])): ?>
+                            <a href="/admin/index.php" class="ms-3" title="پنل مدیریت">
+                                <i class="ri-shield-user-line fs-5"></i>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end text-small shadow" aria-labelledby="dropdownUser">
-                                <li><a class="dropdown-item" href="profile.php">حساب کاربری</a></li>
-                                <?php if (!empty($_SESSION['is_admin'])): ?>
-                                    <li><a class="dropdown-item" href="/admin/index.php">پنل مدیریت</a></li>
-                                <?php endif; ?>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="logout.php">خروج</a></li>
-                            </ul>
-                        </div>
+                        <?php endif; ?>
+                        <a href="logout.php" class="ms-3" title="خروج">
+                            <i class="ri-logout-box-r-line fs-5"></i>
+                        </a>
                     <?php else: ?>
                         <a href="login.php" class="btn btn-primary btn-sm ms-3">ورود / ثبت‌نام</a>
                     <?php endif; ?>
