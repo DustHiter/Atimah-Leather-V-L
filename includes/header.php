@@ -1,4 +1,7 @@
 <?php
+// Enforce session cookie settings BEFORE starting the session
+require_once __DIR__ . '/session_config.php';
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }

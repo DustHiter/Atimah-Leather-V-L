@@ -1,0 +1,33 @@
+Google callback received: Array
+(
+    [code] => 4/0ATX87lPjrFIOuwWliENWcywUFg2GEgcus6DYYxEZCL3ISMUJlz2hqnXSPJ1U_xb5nX_WAg
+    [scope] => email profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid
+    [authuser] => 0
+    [prompt] => none
+)
+
+Google token response: Array
+(
+    [access_token] => ya29.A0Aa7pCA82ZzUaONLUeRj6TaiCF4mN_rnoysKXYJx0sBfNIlsRFNhsWQCH9KRqJqs82imX0t3UqTAPol9kD6c-XJKKI2ulxWmO7vabFCvWoaF2LR6fMNTH4iaruLxAws6xvgyObdGfkQgGHBDu2JBrMvEi0bLjqAMf5qOZA1mmRuR2CJzDnHTZoCqSaf7VeweMSAD8FkMx3Kn1t9CWs8CJce-OUBrQghfntFzqbvhbgf4rQynhpjg2iLtrvXmP_PPMIb_WJDTuvB9jrDBXi46McpOPPyheygaCgYKAUISARISFQHGX2MioKN_UM1Usr69JF1Ts3UnCQ0293
+    [expires_in] => 3598
+    [scope] => https://www.googleapis.com/auth/userinfo.email openid https://www.googleapis.com/auth/userinfo.profile
+    [token_type] => Bearer
+    [id_token] => eyJhbGciOiJSUzI1NiIsImtpZCI6ImQ1NDNlMjFhMDI3M2VmYzY2YTQ3NTAwMDI0NDFjYjIxNTFjYjIzNWYiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI5MTU2MzEzMTE3NDYtbzZnazA3Nmw2bGZ2dWJvaW45OXUyaDhjZ3FpbGMwcWsuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI5MTU2MzEzMTE3NDYtbzZnazA3Nmw2bGZ2dWJvaW45OXUyaDhjZ3FpbGMwcWsuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTExNjMwMjQwMTY0NTUxMTM0OTYiLCJlbWFpbCI6ImR1c3QuYWk4OUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXRfaGFzaCI6InUyZXNtVzcxdGo2RGRETTBaOEN6SkEiLCJuYW1lIjoiZHVzdCBhaSIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQ2c4b2NLaVRaZmJYVThOc3NzUW1Sb1V4dllKWkVTVldfVmpRU3FmRnhoNjZnazRPVFNrY2c9czk2LWMiLCJnaXZlbl9uYW1lIjoiZHVzdCIsImZhbWlseV9uYW1lIjoiYWkiLCJpYXQiOjE3NjUyMjQxMTQsImV4cCI6MTc2NTIyNzcxNH0.UvgktDzIgMhJLKvQfSGs9GTfodjShyXNRvnPs60vtnyGhdb0d6E8nD_l4kF5HXlcJAMpb4T7QVNCKvXdeG8gI68-_n-FIUfIqkePh167Qh553gHw-8K7v8vmmvDpVvWg4gPXBqARsgZc6_53qAEd6b2aUGGiRDicCwBkS6tDk4We14bIO71g7d70WEnmBLIE5YA7FIj9PYMfWMs0r9oN8fgG1Qt29LO3L4AQ7P8QzqZ3bNL4OiZC_kl0wsVK6TBDuoXFxUMPsUhkvUNr4A67mJa900wxjW9TrzNG8ZJBiwybgdKIY71r_xtEpPemTHuhYsmvaOlzhJ4RkngneNCY8Q
+    [created] => 1765224114
+)
+
+Google callback received: Array
+(
+    [code] => 4/0ATX87lPjrFIOuwWliENWcywUFg2GEgcus6DYYxEZCL3ISMUJlz2hqnXSPJ1U_xb5nX_WAg
+    [scope] => email profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid
+    [authuser] => 0
+    [prompt] => none
+)
+
+Google token response: Array
+(
+    [error] => invalid_grant
+    [error_description] => Bad Request
+)
+
+Google Auth Exception: Token error: Bad Request

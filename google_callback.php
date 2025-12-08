@@ -1,7 +1,14 @@
 <?php
+// MUST be called before session_start()
+require_once 'includes/session_config.php';
 session_start();
+
 require_once 'vendor/autoload.php';
-require_once 'db/config.php';
+
+// Google API configuration
+define('GOOGLE_CLIENT_ID', '915631311746-o6gk076l6lfvuboin99u2h8cgqilc0qk.apps.googleusercontent.com');
+define('GOOGLE_CLIENT_SECRET', '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');
+define('GOOGLE_REDIRECT_URL', 'https://atimah-leather.dev.flatlogic.app/google_callback.php');
 
 // Check if the user has a temporary identifier from the initial login, and clear it.
 if (isset($_SESSION['otp_identifier'])) {
@@ -18,53 +25,43 @@ $client->addScope("profile");
 // Handle the OAuth 2.0 server response
 if (isset($_GET['code'])) {
     try {
+        error_log('Google callback received: ' . print_r($_GET, true));
         $token = $client->fetchAccessTokenWithAuthCode($_GET['code']);
+        error_log('Google token response: ' . print_r($token, true));
+
         if (isset($token['error'])) {
-            throw new Exception('Google auth error: ' . $token['error_description']);
+            throw new Exception('Token error: ' . ($token['error_description'] ?? 'Unknown error'));
         }
+        
         $client->setAccessToken($token['access_token']);
 
-        // Get user profile information
         $google_oauth = new Google_Service_Oauth2($client);
         $google_account_info = $google_oauth->userinfo->get();
-        $email = $google_account_info->email;
-        $name = $google_account_info->name;
 
-        $pdo = db();
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
-        $stmt->execute([$email]);
-        $user = $stmt->fetch();
+        $userInfo = [
+            'email' => $google_account_info->email,
+            'name' => $google_account_info->name,
+        ];
+        
+        $_SESSION['google_user_info'] = $userInfo;
 
-        if ($user) {
-            // User exists, log them in
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['user_name'] = $user['name'];
-            $_SESSION['is_admin'] = $user['is_admin'];
-        } else {
-            // User does not exist, create a new one
-            // A null password is used as authentication is managed by Google.
-            $insertStmt = $pdo->prepare("INSERT INTO users (name, email, password, is_admin, created_at) VALUES (?, ?, NULL, 0, NOW())");
-            $insertStmt->execute([$name, $email]);
-            $newUserId = $pdo->lastInsertId();
-
-            $_SESSION['user_id'] = $newUserId;
-            $_SESSION['user_name'] = $name;
-            $_SESSION['is_admin'] = 0;
-        }
-
-        // Redirect to the profile page upon successful login/registration
-        header('Location: profile.php');
+        // Explicitly save the session data before redirecting.
+        session_write_close();
+        
+        header('Location: auth_handler.php');
         exit();
 
-    } catch (Exception $e) {
-        // On error, redirect to login with an error message
-        error_log($e->getMessage()); // Log the actual error for debugging
-        header('Location: login.php?error=google_auth_failed');
+    } catch (Throwable $t) {
+        // Log the actual error to the server's error log for inspection.
+        error_log('Google Auth Exception: ' . $t->getMessage());
+        
+        header('Location: login.php?error=google_auth_failed_exception');
         exit();
     }
 } else {
-    // If no authorization code is present, generate the authentication URL and redirect.
     $authUrl = $client->createAuthUrl();
-    header('Location: ' . $authUrl);
+    // Instead of redirecting, print the URL for debugging
+    echo "Please copy this URL and send it back to me:<br><br>";
+    echo $authUrl;
     exit();
 }

@@ -18,6 +18,6 @@ function db() {
 
 // Google API configuration
 define('GOOGLE_CLIENT_ID', '915631311746-o6gk076l6lfvuboin99u2h8cgqilc0qk.apps.googleusercontent.com');
-define('GOOGLE_CLIENT_SECRET', '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');
+define('GOOGLE_CLIENT_SECRET', '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');
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
 define('GOOGLE_REDIRECT_URL', $protocol . $_SERVER['HTTP_HOST'] . '/google_callback.php');
