@@ -31,3 +31,4 @@ Google token response: Array
 )
 
 Google Auth Exception: Token error: Bad Request
+OTP Send Mail Error: PHPMailer error: SMTP Error: data not accepted.

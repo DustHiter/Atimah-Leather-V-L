@@ -68,11 +68,25 @@ $body_class = "login-page-modern";
                     </div>
                 </div>
 
-                <div class="form-floating mb-3">
-                    <input type="email" class="form-control" id="login_identifier" name="email" placeholder="ایمیل خود را وارد کنید" required>
-                    <label for="login_identifier">ایمیل</label>
-                    <div class="invalid-feedback" id="invalid_feedback_message">
-                        لطفا یک ایمیل معتبر وارد کنید.
+                <!-- Email Input -->
+                <div id="email_input_group">
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control" id="email_input" name="email" placeholder="ایمیل خود را وارد کنید" required>
+                        <label for="email_input">ایمیل</label>
+                        <div class="invalid-feedback">
+                            لطفا یک ایمیل معتبر وارد کنید.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phone Input (hidden by default) -->
+                <div id="phone_input_group" style="display: none;">
+                    <div class="form-floating mb-3">
+                        <input type="tel" class="form-control" id="phone_input" name="phone" placeholder="09123456789" pattern="09[0-9]{9}" required>
+                        <label for="phone_input">تلفن همراه</label>
+                        <div class="invalid-feedback">
+                            لطفا یک شماره تلفن معتبر (مانند 09123456789) وارد کنید.
+                        </div>
                     </div>
                 </div>
                 
@@ -99,7 +113,7 @@ $body_class = "login-page-modern";
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Simple form validation
+        // Standard Bootstrap validation script
         (function () {
             'use strict';
             var forms = document.querySelectorAll('.needs-validation');
@@ -115,49 +129,45 @@ $body_class = "login-page-modern";
                 });
         })();
 
-        // Login toggle logic
+        // New, simplified toggle logic
         document.addEventListener('DOMContentLoaded', function() {
             const emailToggle = document.getElementById('email_toggle');
             const phoneToggle = document.getElementById('phone_toggle');
-            const loginInput = document.getElementById('login_identifier');
-            const loginLabel = document.querySelector('label[for="login_identifier"]');
-            const feedbackMessage = document.getElementById('invalid_feedback_message');
+            
+            const emailGroup = document.getElementById('email_input_group');
+            const phoneGroup = document.getElementById('phone_input_group');
 
-            function updateInput(isEmail) {
-                if (isEmail) {
-                    loginInput.type = 'email';
-                    loginInput.name = 'email';
-                    loginInput.placeholder = 'ایمیل خود را وارد کنید';
-                    loginInput.pattern = null; // Use browser's default email validation
-                    loginLabel.textContent = 'ایمیل';
-                    feedbackMessage.textContent = 'لطفا یک ایمیل معتبر وارد کنید.';
+            const emailInput = document.getElementById('email_input');
+            const phoneInput = document.getElementById('phone_input');
+
+            function toggleInputs(showEmail) {
+                if (showEmail) {
+                    emailGroup.style.display = 'block';
+                    emailInput.disabled = false;
+                    phoneGroup.style.display = 'none';
+                    phoneInput.disabled = true;
                 } else {
-                    loginInput.type = 'tel';
-                    loginInput.name = 'phone';
-                    loginInput.placeholder = '09123456789';
-                    loginInput.pattern = '09[0-9]{9}'; // Simple Iranian mobile pattern
-                    loginLabel.textContent = 'تلفن همراه';
-                    feedbackMessage.textContent = 'لطفا یک شماره تلفن معتبر (مانند 09123456789) وارد کنید.';
+                    emailGroup.style.display = 'none';
+                    emailInput.disabled = true;
+                    phoneGroup.style.display = 'block';
+                    phoneInput.disabled = false;
                 }
-                // Reset validation state
-                loginInput.value = '';
-                loginInput.closest('form').classList.remove('was-validated');
             }
 
             emailToggle.addEventListener('change', function() {
                 if (this.checked) {
-                    updateInput(true);
+                    toggleInputs(true);
                 }
             });
 
             phoneToggle.addEventListener('change', function() {
                 if (this.checked) {
-                    updateInput(false);
+                    toggleInputs(false);
                 }
             });
 
             // Initialize on page load
-            updateInput(emailToggle.checked);
+            toggleInputs(emailToggle.checked);
         });
     </script>
 </body>

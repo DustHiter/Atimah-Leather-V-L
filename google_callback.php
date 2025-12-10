@@ -6,8 +6,8 @@ session_start();
 require_once 'vendor/autoload.php';
 
 // Google API configuration
-define('GOOGLE_CLIENT_ID', '915631311746-o6gk076l6lfvuboin99u2h8cgqilc0qk.apps.googleusercontent.com');
-define('GOOGLE_CLIENT_SECRET', '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');
+define('GOOGLE_CLIENT_ID', '915631311746-u10nasn59smdjn3ofle2a186vobmgll7.apps.googleusercontent.com');
+define('GOOGLE_CLIENT_SECRET', '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');
 define('GOOGLE_REDIRECT_URL', 'https://atimah-leather.dev.flatlogic.app/google_callback.php');
 
 // Check if the user has a temporary identifier from the initial login, and clear it.
@@ -48,7 +48,7 @@ if (isset($_GET['code'])) {
         // Explicitly save the session data before redirecting.
         session_write_close();
         
-        header('Location: auth_handler.php');
+        header('Location: auth_handler.php?action=google_callback');
         exit();
 
     } catch (Throwable $t) {
@@ -59,9 +59,7 @@ if (isset($_GET['code'])) {
         exit();
     }
 } else {
-    $authUrl = $client->createAuthUrl();
-    // Instead of redirecting, print the URL for debugging
-    echo "Please copy this URL and send it back to me:<br><br>";
-    echo $authUrl;
+    // It's the initial request, redirect to Google's OAuth 2.0 server
+    header('Location: ' . $client->createAuthUrl());
     exit();
 }
