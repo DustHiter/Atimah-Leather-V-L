@@ -1,150 +1,111 @@
-<?php
-declare(strict_types=1);
-@ini_set('display_errors', '1');
-@error_reporting(E_ALL);
-@date_default_timezone_set('UTC');
+<?php 
+$page_title = 'صفحه اصلی';
+include 'includes/header.php'; 
 
-$phpVersion = PHP_VERSION;
-$now = date('Y-m-d H:i:s');
+
+// Load dynamic content
+$about_us_image_data = json_decode(file_get_contents('about_us_image.json'), true);
+$about_us_image_url = $about_us_image_data ? str_replace('\\/', '/', $about_us_image_data['local_path']) : 'assets/images/pexels/about-us-34942790.jpg';
+
+require_once 'db/config.php';
 ?>
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>New Style</title>
-<?php
-// Read project preview data from environment
-$projectDescription = $_SERVER['PROJECT_DESCRIPTION'] ?? '';
-$projectImageUrl = $_SERVER['PROJECT_IMAGE_URL'] ?? '';
-?>
-<?php if ($projectDescription): ?>
-  <!-- Meta description -->
-  <meta name="description" content='<?= htmlspecialchars($projectDescription) ?>' />
-  <!-- Open Graph meta tags -->
-  <meta property="og:description" content="<?= htmlspecialchars($projectDescription) ?>" />
-  <!-- Twitter meta tags -->
-  <meta property="twitter:description" content="<?= htmlspecialchars($projectDescription) ?>" />
-<?php endif; ?>
-<?php if ($projectImageUrl): ?>
-  <!-- Open Graph image -->
-  <meta property="og:image" content="<?= htmlspecialchars($projectImageUrl) ?>" />
-  <!-- Twitter image -->
-  <meta property="twitter:image" content="<?= htmlspecialchars($projectImageUrl) ?>" />
-<?php endif; ?>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg-color-start: #6a11cb;
-      --bg-color-end: #2575fc;
-      --text-color: #ffffff;
-      --card-bg-color: rgba(255, 255, 255, 0.01);
-      --card-border-color: rgba(255, 255, 255, 0.1);
-    }
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(45deg, var(--bg-color-start), var(--bg-color-end));
-      color: var(--text-color);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      text-align: center;
-      overflow: hidden;
-      position: relative;
-    }
-    body::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M-10 10L110 10M10 -10L10 110" stroke-width="1" stroke="rgba(255,255,255,0.05)"/></svg>');
-      animation: bg-pan 20s linear infinite;
-      z-index: -1;
-    }
-    @keyframes bg-pan {
-      0% { background-position: 0% 0%; }
-      100% { background-position: 100% 100%; }
-    }
-    main {
-      padding: 2rem;
-    }
-    .card {
-      background: var(--card-bg-color);
-      border: 1px solid var(--card-border-color);
-      border-radius: 16px;
-      padding: 2rem;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-    }
-    .loader {
-      margin: 1.25rem auto 1.25rem;
-      width: 48px;
-      height: 48px;
-      border: 3px solid rgba(255, 255, 255, 0.25);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-    }
-    .hint {
-      opacity: 0.9;
-    }
-    .sr-only {
-      position: absolute;
-      width: 1px; height: 1px;
-      padding: 0; margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap; border: 0;
-    }
-    h1 {
-      font-size: 3rem;
-      font-weight: 700;
-      margin: 0 0 1rem;
-      letter-spacing: -1px;
-    }
-    p {
-      margin: 0.5rem 0;
-      font-size: 1.1rem;
-    }
-    code {
-      background: rgba(0,0,0,0.2);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    }
-    footer {
-      position: absolute;
-      bottom: 1rem;
-      font-size: 0.8rem;
-      opacity: 0.7;
-    }
-  </style>
-</head>
-<body>
-  <main>
-    <div class="card">
-      <h1>Analyzing your requirements and generating your website…</h1>
-      <div class="loader" role="status" aria-live="polite" aria-label="Applying initial changes">
-        <span class="sr-only">Loading…</span>
-      </div>
-      <p class="hint"><?= ($_SERVER['HTTP_HOST'] ?? '') === 'appwizzy.com' ? 'AppWizzy' : 'Flatlogic' ?> AI is collecting your requirements and applying the first changes.</p>
-      <p class="hint">This page will update automatically as the plan is implemented.</p>
-      <p>Runtime: PHP <code><?= htmlspecialchars($phpVersion) ?></code> — UTC <code><?= htmlspecialchars($now) ?></code></p>
+
+<!-- Hero Section -->
+<section class="hero-section vh-100 d-flex justify-content-center align-items-center position-relative text-white text-center">
+    <div class="hero-video-background">
+        <video playsinline autoplay muted loop poster="assets/images/pexels/about-us-34942790.jpg">
+            <source src="https://videos.pexels.com/video-files/8065365/8065365-hd_1920_1080_25fps.mp4" type="video/mp4">
+            ویدیوی شما توسط مرورگر پشتیبانی نمی‌شود.
+        </video>
+        <div class="hero-video-overlay"></div>
     </div>
-  </main>
-  <footer>
-    Page updated: <?= htmlspecialchars($now) ?> (UTC)
-  </footer>
-</body>
-</html>
+    <div class="container position-relative">
+        <h1 class="display-3 fw-bold" data-aos="fade-down">اصالت در هر نگاه</h1>
+        <p class="lead fs-4 mb-4" data-aos="fade-up" data-aos-delay="200">محصولات چرمی دست‌دوز، آفریده برای ماندگاری.</p>
+        <a href="shop.php" class="btn btn-primary btn-lg" data-aos="fade-up" data-aos-delay="400">مشاهده محصولات</a>
+    </div>
+</section>
+
+
+<!-- Featured Products Section -->
+<section id="featured-products" class="section-padding">
+    <div class="container">
+        <?php
+        if (isset($_SESSION['success_message'])) {
+            echo '<div class="alert alert-success alert-dismissible fade show" role="alert">' . $_SESSION['success_message'] . '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+            unset($_SESSION['success_message']);
+        }
+        if (isset($_SESSION['error_message'])) {
+            echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">' . $_SESSION['error_message'] . '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+            unset($_SESSION['error_message']);
+        }
+        ?>
+        <div class="section-title text-center" data-aos="fade-up">
+            <h1>مجموعه برگزیده ما</h1>
+            <p class="fs-5 text-muted">دست‌چین شده برای سلیقه‌های خاص.</p>
+        </div>
+        
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 g-lg-5">
+            <?php
+            try {
+                $pdo = db();
+                $stmt = $pdo->query("SELECT * FROM products WHERE is_featured = 1 ORDER BY created_at DESC LIMIT 3");
+                $featured_products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                if (empty($featured_products)) {
+                    echo '<div class="col-12"><p class="text-center text-muted">هیچ محصولی برای نمایش وجود ندارد.</p></div>';
+                } else {
+                    $delay = 0;
+                    foreach ($featured_products as $product) {
+            ?>
+            <div class="col" data-aos="fade-up" data-aos-delay="<?= $delay ?>">
+                <div class="product-card h-100">
+                    <div class="product-image">
+                        <a href="product.php?id=<?= $product['id'] ?>">
+                            <img src="<?= htmlspecialchars($product['image_url']) ?>" alt="<?= htmlspecialchars($product['name']) ?>">
+                        </a>
+                    </div>
+                    <div class="product-info text-center">
+                        <h3 class="product-title"><a href="product.php?id=<?= $product['id'] ?>"><?= htmlspecialchars($product['name']) ?></a></h3>
+                        <p class="product-price"><?= number_format($product['price']) ?> تومان</p>
+                    </div>
+                </div>
+            </div>
+            <?php
+                        $delay += 150;
+                    }
+                }
+            } catch (PDOException $e) {
+                error_log("Database error: " . $e->getMessage());
+                echo '<div class="col-12"><p class="text-center text-danger">خطا در بارگذاری محصولات.</p></div>';
+            }
+            ?>
+        </div>
+
+         <div class="text-center mt-5" data-aos="fade-up">
+            <a href="shop.php" class="btn btn-primary">مشاهده تمام محصولات</a>
+        </div>
+    </div>
+</section>
+
+<!-- About Us Section -->
+<section id="about-us" class="section-padding bg-surface">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-md-6" data-aos="fade-right">
+                <img src="<?= htmlspecialchars($about_us_image_url) ?>" alt="درباره ما" class="about-us-image img-fluid">
+            </div>
+            <div class="col-md-6" data-aos="fade-left">
+                <div class="section-title text-md-end text-start">
+                     <h1>داستان آتیمه</h1>
+                </div>
+                <p class="text-muted fs-5 mt-3 text-md-end text-start">ما در آتیمه، به تلفیق هنر سنتی و طراحی مدرن باور داریم. هر محصول، حاصل ساعت‌ها کار دست هنرمندان ماهر و استفاده از بهترین چرم‌های طبیعی است. هدف ما خلق آثاری است که نه تنها یک وسیله، بلکه بخشی از داستان و استایل شما باشند.</p>
+                <div class="text-md-end text-start">
+                    <a href="about.php" class="btn btn-primary mt-3" data-aos="fade-up" data-aos-delay="200">بیشتر بدانید</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<?php include 'includes/footer.php'; ?>
